@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CMS - Gestor de Noticias</title>
+    <title>CMS - Acceso Restringido</title>
     <style>
         * {
             margin: 0;
@@ -13,14 +13,85 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
         }
         
-        .container {
+        /* Estilos del login */
+        #loginScreen {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        #loginScreen h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #1a1a2e;
+        }
+        
+        #loginScreen p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: #1a1a2e;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(26, 26, 46, 0.4);
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* Estilos del CMS */
+        #cmsScreen {
+            display: none;
             max-width: 900px;
+            width: 100%;
             margin: 0 auto;
+        }
+        
+        .container {
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -28,10 +99,11 @@
         }
         
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
         
         .header h1 {
@@ -42,6 +114,24 @@
         .header p {
             opacity: 0.9;
             font-size: 1.1em;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
         }
         
         .form-container {
@@ -61,6 +151,7 @@
         }
         
         input[type="text"],
+        input[type="password"],
         textarea {
             width: 100%;
             padding: 12px 15px;
@@ -72,15 +163,17 @@
         }
         
         input[type="text"]:focus,
+        input[type="password"]:focus,
         textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26, 26, 46, 0.1);
         }
         
         textarea {
-            min-height: 200px;
+            min-height: 250px;
             resize: vertical;
+            line-height: 1.6;
         }
         
         .file-input-wrapper {
@@ -99,7 +192,7 @@
             display: block;
             padding: 12px 15px;
             background: #f5f5f5;
-            border: 2px dashed #667eea;
+            border: 2px dashed #1a1a2e;
             border-radius: 10px;
             text-align: center;
             cursor: pointer;
@@ -107,8 +200,8 @@
         }
         
         .file-input-label:hover {
-            background: #e8ebfa;
-            border-color: #764ba2;
+            background: #e8e8e8;
+            border-color: #16213e;
         }
         
         .image-preview {
@@ -141,13 +234,13 @@
         }
         
         .btn-publish {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: white;
         }
         
         .btn-publish:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 25px rgba(26, 26, 46, 0.4);
         }
         
         .btn-preview {
@@ -209,60 +302,120 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📰 CMS de Noticias</h1>
-            <p>Gestiona y publica tus noticias fácilmente</p>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen">
+        <h1>🔒 Acceso al CMS</h1>
+        <p>Ingresa la contraseña para continuar</p>
+        <input type="password" id="passwordInput" class="login-input" placeholder="Contraseña" autocomplete="off">
+        <button class="login-btn" onclick="checkPassword()">🔑 Acceder</button>
+        <div id="loginError" class="error-message">Contraseña incorrecta</div>
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #999; font-size: 0.9em;">
+            💡 <strong>Tip:</strong> La contraseña por defecto es: <code style="background: #f5f5f5; padding: 2px 8px; border-radius: 4px; color: #333;">admin2025</code><br>
+            <small>Puedes cambiarla editando el archivo cms.html</small>
         </div>
-        
-        <div class="form-container">
-            <div class="instructions">
-                <h3>🔑 Configuración requerida:</h3>
-                <ol>
-                    <li>Crea un <strong>Personal Access Token</strong> en GitHub: <code>Settings → Developer settings → Personal access tokens → Tokens (classic)</code></li>
-                    <li>Dale permisos de <code>repo</code> (acceso completo a repositorios)</li>
-                    <li>Copia el token y pégalo abajo cuando publiques una noticia</li>
-                </ol>
+    </div>
+
+    <!-- Pantalla del CMS -->
+    <div id="cmsScreen">
+        <div class="container">
+            <div class="header">
+                <button class="logout-btn" onclick="logout()">🚪 Cerrar Sesión</button>
+                <h1>📰 CMS de Noticias</h1>
+                <p>Gestiona y publica tus noticias fácilmente</p>
             </div>
             
-            <form id="newsForm">
-                <div class="form-group">
-                    <label for="title">📌 Título de la Noticia *</label>
-                    <input type="text" id="title" name="title" placeholder="Ej: Nueva actualización disponible" required>
+            <div class="form-container">
+                <div class="instructions">
+                    <h3>🔑 Configuración requerida:</h3>
+                    <ol>
+                        <li>Crea un <strong>Personal Access Token</strong> en GitHub: <code>Settings → Developer settings → Personal access tokens → Tokens (classic)</code></li>
+                        <li>Dale permisos de <code>repo</code> (acceso completo a repositorios)</li>
+                        <li>Copia el token y pégalo abajo cuando publiques una noticia</li>
+                    </ol>
                 </div>
                 
-                <div class="form-group">
-                    <label for="content">📝 Contenido de la Noticia *</label>
-                    <textarea id="content" name="content" placeholder="Escribe aquí el contenido completo de tu noticia..." required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="image">🖼️ Imagen (opcional)</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="image" name="image" accept="image/*">
-                        <label for="image" class="file-input-label">
-                            📤 Haz clic para seleccionar una imagen
-                        </label>
+                <form id="newsForm">
+                    <div class="form-group">
+                        <label for="title">📌 Título de la Noticia *</label>
+                        <input type="text" id="title" name="title" placeholder="Ej: Nueva actualización disponible" required>
                     </div>
-                    <div id="imagePreview" class="image-preview"></div>
-                </div>
+                    
+                    <div class="form-group">
+                        <label for="content">📝 Contenido de la Noticia *</label>
+                        <textarea id="content" name="content" placeholder="Escribe aquí el contenido completo de tu noticia..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="image">🖼️ Imagen (opcional)</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="image" name="image" accept="image/*">
+                            <label for="image" class="file-input-label">
+                                📤 Haz clic para seleccionar una imagen
+                            </label>
+                        </div>
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="token">🔐 GitHub Personal Access Token *</label>
+                        <input type="password" id="token" name="token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
+                    </div>
+                    
+                    <div class="btn-container">
+                        <button type="button" class="btn-preview" onclick="previewNews()">👁️ Vista Previa</button>
+                        <button type="submit" class="btn-publish">🚀 Publicar Noticia</button>
+                    </div>
+                </form>
                 
-                <div class="form-group">
-                    <label for="token">🔐 GitHub Personal Access Token *</label>
-                    <input type="password" id="token" name="token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
-                </div>
-                
-                <div class="btn-container">
-                    <button type="button" class="btn-preview" onclick="previewNews()">👁️ Vista Previa</button>
-                    <button type="submit" class="btn-publish">🚀 Publicar Noticia</button>
-                </div>
-            </form>
-            
-            <div id="statusMessage" class="status-message"></div>
+                <div id="statusMessage" class="status-message"></div>
+            </div>
         </div>
     </div>
 
     <script>
+        // CAMBIA ESTA CONTRASEÑA POR LA QUE QUIERAS
+        const CMS_PASSWORD = 'admin2025';
+        
+        // Verificar si ya hay sesión activa
+        window.addEventListener('DOMContentLoaded', function() {
+            if (sessionStorage.getItem('cms_logged_in') === 'true') {
+                showCMS();
+            }
+            
+            // Permitir Enter en el login
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        });
+        
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            
+            if (password === CMS_PASSWORD) {
+                sessionStorage.setItem('cms_logged_in', 'true');
+                showCMS();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+        
+        function showCMS() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('cmsScreen').style.display = 'block';
+            document.body.style.display = 'block';
+            document.body.style.alignItems = 'flex-start';
+            document.body.style.paddingTop = '40px';
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('cms_logged_in');
+            location.reload();
+        }
+
         // Preview de la imagen
         document.getElementById('image').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -296,7 +449,7 @@
                     <title>Vista Previa: ${title}</title>
                     <style>
                         body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
-                        h1 { color: #333; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+                        h1 { color: #333; border-bottom: 3px solid #1a1a2e; padding-bottom: 10px; }
                         .content { line-height: 1.8; color: #555; white-space: pre-wrap; }
                         img { max-width: 100%; height: auto; border-radius: 10px; margin: 20px 0; }
                     </style>
