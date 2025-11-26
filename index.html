@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Noticias</title>
+    <title id="pageTitle">Portal de Noticias</title>
+    <meta name="description" content="Portal de noticias y artículos" id="pageDescription">
+    <meta property="og:title" content="Portal de Noticias" id="ogTitle">
+    <meta property="og:description" content="Últimas noticias y actualizaciones" id="ogDescription">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -21,7 +20,6 @@
             line-height: 1.6;
         }
         
-        /* Header tipo Medium */
         .header {
             background: #ffffff;
             border-bottom: 1px solid #e6e6e6;
@@ -48,6 +46,7 @@
             font-weight: 900;
             color: #1a1a1a;
             letter-spacing: -0.02em;
+            text-decoration: none;
         }
         
         .site-nav a {
@@ -57,11 +56,6 @@
             transition: color 0.2s ease;
         }
         
-        .site-nav a:hover {
-            color: #1a1a1a;
-        }
-        
-        /* Hero section */
         .hero {
             max-width: 1100px;
             margin: 60px auto 40px;
@@ -85,14 +79,12 @@
             max-width: 600px;
         }
         
-        /* Container */
         .container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 60px 24px;
         }
         
-        /* Grid de noticias tipo Medium */
         .news-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -110,9 +102,7 @@
             transition: all 0.2s ease;
         }
         
-        .news-card:hover {
-            opacity: 0.8;
-        }
+        .news-card:hover { opacity: 0.8; }
         
         .news-content {
             display: flex;
@@ -167,16 +157,7 @@
             color: #6b6b6b;
         }
         
-        .read-time {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .news-image-container {
-            display: flex;
-            align-items: center;
-        }
+        .news-image-container { display: flex; align-items: center; }
         
         .news-image {
             width: 100%;
@@ -197,63 +178,24 @@
             color: #c0c0c0;
         }
         
-        /* Modal estilo Medium */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.98);
-            z-index: 1000;
-            overflow-y: auto;
-        }
-        
-        .modal.active {
-            display: block;
-        }
-        
-        .modal-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255,255,255,0.95);
-            border-bottom: 1px solid #e6e6e6;
-            padding: 20px;
-            z-index: 1001;
-            backdrop-filter: blur(10px);
-        }
-        
-        .modal-close {
-            font-size: 1.5em;
-            cursor: pointer;
-            color: #6b6b6b;
-            transition: color 0.2s ease;
-            background: none;
-            border: none;
-            padding: 0;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-        
-        .modal-close:hover {
-            color: #1a1a1a;
-            background: #f5f5f5;
-        }
-        
-        .modal-content {
+        /* Vista individual */
+        .single-article {
             max-width: 740px;
-            margin: 100px auto 60px;
+            margin: 60px auto;
             padding: 0 24px;
         }
         
-        .modal-title {
+        .back-link {
+            display: inline-block;
+            color: #6b6b6b;
+            text-decoration: none;
+            margin-bottom: 40px;
+            font-size: 0.95em;
+        }
+        
+        .back-link:hover { color: #1a1a1a; }
+        
+        .article-title {
             font-family: 'Merriweather', Georgia, serif;
             font-size: 3em;
             font-weight: 700;
@@ -263,7 +205,7 @@
             letter-spacing: -0.03em;
         }
         
-        .modal-meta {
+        .article-meta {
             display: flex;
             align-items: center;
             gap: 16px;
@@ -272,17 +214,7 @@
             border-bottom: 1px solid #e6e6e6;
         }
         
-        .modal-author {
-            font-weight: 500;
-            color: #1a1a1a;
-        }
-        
-        .modal-date {
-            color: #6b6b6b;
-            font-size: 0.95em;
-        }
-        
-        .modal-image {
+        .article-image {
             width: 100%;
             max-height: 500px;
             object-fit: cover;
@@ -290,7 +222,7 @@
             border-radius: 4px;
         }
         
-        .modal-text {
+        .article-text {
             font-family: 'Merriweather', Georgia, serif;
             font-size: 1.25em;
             line-height: 1.8;
@@ -299,19 +231,32 @@
             word-wrap: break-word;
         }
         
-        .modal-text p {
-            margin-bottom: 28px;
+        .share-buttons {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #e6e6e6;
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
         
-        /* Loading y empty states */
+        .share-btn {
+            padding: 10px 20px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+        
+        .share-btn:hover {
+            background: #e0e0e0;
+        }
+        
         .loading, .no-news {
             text-align: center;
             padding: 80px 24px;
-        }
-        
-        .loading {
-            font-size: 1.1em;
-            color: #6b6b6b;
         }
         
         .no-news h2 {
@@ -319,12 +264,6 @@
             font-size: 2em;
             margin-bottom: 16px;
             color: #1a1a1a;
-        }
-        
-        .no-news p {
-            font-size: 1.1em;
-            color: #6b6b6b;
-            margin-bottom: 32px;
         }
         
         .btn {
@@ -336,15 +275,8 @@
             border-radius: 24px;
             font-weight: 500;
             font-size: 0.95em;
-            transition: all 0.2s ease;
         }
         
-        .btn:hover {
-            background: #000000;
-            transform: translateY(-1px);
-        }
-        
-        /* Footer */
         .footer {
             max-width: 1100px;
             margin: 0 auto;
@@ -361,116 +293,117 @@
             font-weight: 500;
         }
         
-        .footer a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Responsive */
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5em;
-            }
-            
-            .hero-subtitle {
-                font-size: 1.2em;
-            }
-            
+            .hero-title { font-size: 2.5em; }
             .news-card {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            
-            .news-image-container {
-                order: -1;
-            }
-            
-            .news-title {
-                font-size: 1.5em;
-            }
-            
-            .modal-title {
-                font-size: 2em;
-            }
-            
-            .modal-text {
-                font-size: 1.1em;
-            }
-            
-            .site-title {
-                font-size: 1.4em;
-            }
+            .news-image-container { order: -1; }
+            .article-title { font-size: 2em; }
+            .article-text { font-size: 1.1em; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <h1 class="site-title">Portal de Noticias</h1>
+            <a href="/noticias/" class="site-title">Portal de Noticias</a>
             <nav class="site-nav">
-                <a href="#">Inicio</a>
+                <a href="/noticias/">Inicio</a>
             </nav>
         </div>
     </header>
     
-    <!-- Hero -->
-    <section class="hero">
+    <div id="heroSection" class="hero">
         <h2 class="hero-title">Últimas historias y noticias</h2>
         <p class="hero-subtitle">Mantente informado con las últimas actualizaciones y artículos destacados</p>
-    </section>
+    </div>
     
-    <!-- Container -->
     <main class="container">
-        <div id="newsContainer" class="loading">
-            Cargando noticias...
-        </div>
+        <div id="newsContainer" class="loading">Cargando noticias...</div>
     </main>
     
-    <!-- Footer -->
     <footer class="footer">
         <p>Portal de Noticias © 2025 • <a href="cms.html">Acceder al CMS</a></p>
     </footer>
-    
-    <!-- Modal -->
-    <div id="newsModal" class="modal">
-        <div class="modal-header">
-            <button class="modal-close" onclick="closeModal()">×</button>
-        </div>
-        <article class="modal-content" id="modalBody"></article>
-    </div>
 
     <script>
         let newsData = [];
         
-        // Cargar noticias
-        window.addEventListener('DOMContentLoaded', loadNews);
+        window.addEventListener('DOMContentLoaded', init);
         
-        async function loadNews() {
+        async function init() {
             try {
-                const response = await fetch('news-data.json?t=' + new Date().getTime());
-                
-                if (!response.ok) {
-                    throw new Error('No se encontraron noticias');
-                }
+                const response = await fetch('news-data.json?t=' + Date.now());
+                if (!response.ok) throw new Error('Sin noticias');
                 
                 newsData = await response.json();
                 
-                if (newsData.length === 0) {
-                    showNoNews();
-                } else {
-                    displayNews(newsData);
-                }
+                // Verificar si hay parámetro ?id=
+                const urlParams = new URLSearchParams(window.location.search);
+                const newsId = urlParams.get('id');
                 
+                if (newsId) {
+                    // Mostrar noticia individual
+                    const news = newsData.find(n => n.id == newsId);
+                    if (news) {
+                        showSingleArticle(news);
+                    } else {
+                        window.location.href = '/noticias/';
+                    }
+                } else {
+                    // Mostrar lista
+                    if (newsData.length === 0) {
+                        showNoNews();
+                    } else {
+                        displayNews(newsData);
+                    }
+                }
             } catch (error) {
                 showNoNews();
             }
         }
         
         function calculateReadTime(text) {
-            const wordsPerMinute = 200;
             const words = text.split(/\s+/).length;
-            const minutes = Math.ceil(words / wordsPerMinute);
+            const minutes = Math.ceil(words / 200);
             return `${minutes} min de lectura`;
+        }
+        
+        function showSingleArticle(news) {
+            document.getElementById('heroSection').style.display = 'none';
+            
+            // Meta tags para compartir
+            document.getElementById('pageTitle').textContent = news.title + ' | Portal de Noticias';
+            document.getElementById('pageDescription').content = news.content.substring(0, 160);
+            document.getElementById('ogTitle').content = news.title;
+            document.getElementById('ogDescription').content = news.content.substring(0, 200);
+            
+            const container = document.getElementById('newsContainer');
+            const readTime = calculateReadTime(news.content);
+            const shareUrl = window.location.href;
+            
+            container.className = 'single-article';
+            container.innerHTML = `
+                <a href="/noticias/" class="back-link">← Volver a todas las noticias</a>
+                <h1 class="article-title">${news.title}</h1>
+                <div class="article-meta">
+                    <span style="font-weight: 500; color: #1a1a1a;">Portal de Noticias</span>
+                    <span>·</span>
+                    <span style="color: #6b6b6b;">${news.date}</span>
+                    <span>·</span>
+                    <span style="color: #6b6b6b;">${readTime}</span>
+                </div>
+                ${news.image ? `<img src="${news.image}" alt="${news.title}" class="article-image">` : ''}
+                <div class="article-text">${news.content}</div>
+                <div class="share-buttons">
+                    <span style="color: #6b6b6b;">Compartir:</span>
+                    <button class="share-btn" onclick="copyLink()">🔗 Copiar enlace</button>
+                    <button class="share-btn" onclick="shareTwitter()">🐦 Twitter</button>
+                    <button class="share-btn" onclick="shareFacebook()">👍 Facebook</button>
+                </div>
+            `;
         }
         
         function displayNews(news) {
@@ -481,7 +414,7 @@
             news.forEach((item) => {
                 const card = document.createElement('article');
                 card.className = 'news-card';
-                card.onclick = () => openModal(item);
+                card.onclick = () => window.location.href = `?id=${item.id}`;
                 
                 const excerpt = item.content.substring(0, 200) + (item.content.length > 200 ? '...' : '');
                 const readTime = calculateReadTime(item.content);
@@ -496,7 +429,7 @@
                         <h2 class="news-title">${item.title}</h2>
                         <p class="news-excerpt">${excerpt}</p>
                         <div class="news-footer">
-                            <span class="read-time">${readTime}</span>
+                            <span>${readTime}</span>
                         </div>
                     </div>
                     <div class="news-image-container">
@@ -521,41 +454,19 @@
             `;
         }
         
-        function openModal(news) {
-            const modal = document.getElementById('newsModal');
-            const modalBody = document.getElementById('modalBody');
-            const readTime = calculateReadTime(news.content);
-            
-            modalBody.innerHTML = `
-                ${news.image ? `<img src="${news.image}" alt="${news.title}" class="modal-image">` : ''}
-                <h1 class="modal-title">${news.title}</h1>
-                <div class="modal-meta">
-                    <span class="modal-author">Portal de Noticias</span>
-                    <span>·</span>
-                    <span class="modal-date">${news.date}</span>
-                    <span>·</span>
-                    <span>${readTime}</span>
-                </div>
-                <div class="modal-text">${news.content}</div>
-            `;
-            
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            window.scrollTo(0, 0);
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert('✅ Enlace copiado al portapapeles');
         }
         
-        function closeModal() {
-            const modal = document.getElementById('newsModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
+        function shareTwitter() {
+            const text = document.querySelector('.article-title').textContent;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
         }
         
-        // Cerrar con ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-        });
+        function shareFacebook() {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+        }
     </script>
 </body>
 </html>
