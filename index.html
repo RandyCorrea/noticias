@@ -3,10 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Meta tags básicos -->
     <title id="pageTitle">Portal de Noticias</title>
     <meta name="description" content="Portal de noticias y artículos" id="pageDescription">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Portal de Noticias">
     <meta property="og:title" content="Portal de Noticias" id="ogTitle">
     <meta property="og:description" content="Últimas noticias y actualizaciones" id="ogDescription">
+    <meta property="og:image" content="" id="ogImage">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="" id="ogUrl">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Portal de Noticias" id="twitterTitle">
+    <meta name="twitter:description" content="Últimas noticias y actualizaciones" id="twitterDescription">
+    <meta name="twitter:image" content="" id="twitterImage">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -178,7 +195,6 @@
             color: #c0c0c0;
         }
         
-        /* Vista individual */
         .single-article {
             max-width: 740px;
             margin: 60px auto;
@@ -238,6 +254,7 @@
             display: flex;
             gap: 15px;
             align-items: center;
+            flex-wrap: wrap;
         }
         
         .share-btn {
@@ -250,9 +267,7 @@
             transition: all 0.2s ease;
         }
         
-        .share-btn:hover {
-            background: #e0e0e0;
-        }
+        .share-btn:hover { background: #e0e0e0; }
         
         .loading, .no-news {
             text-align: center;
@@ -340,12 +355,10 @@
                 
                 newsData = await response.json();
                 
-                // Verificar si hay parámetro ?id=
                 const urlParams = new URLSearchParams(window.location.search);
                 const newsId = urlParams.get('id');
                 
                 if (newsId) {
-                    // Mostrar noticia individual
                     const news = newsData.find(n => n.id == newsId);
                     if (news) {
                         showSingleArticle(news);
@@ -353,7 +366,6 @@
                         window.location.href = '/noticias/';
                     }
                 } else {
-                    // Mostrar lista
                     if (newsData.length === 0) {
                         showNoNews();
                     } else {
@@ -371,18 +383,38 @@
             return `${minutes} min de lectura`;
         }
         
+        function updateMetaTags(news) {
+            const baseUrl = window.location.origin + window.location.pathname;
+            const fullUrl = window.location.href;
+            const description = news.content.substring(0, 160).replace(/\n/g, ' ');
+            const imageUrl = news.image ? (baseUrl.replace('/index.html', '/').replace(/\/$/, '') + '/' + news.image) : '';
+            
+            // Título
+            document.getElementById('pageTitle').textContent = news.title + ' | Portal de Noticias';
+            document.getElementById('ogTitle').setAttribute('content', news.title);
+            document.getElementById('twitterTitle').setAttribute('content', news.title);
+            
+            // Descripción
+            document.getElementById('pageDescription').setAttribute('content', description);
+            document.getElementById('ogDescription').setAttribute('content', description);
+            document.getElementById('twitterDescription').setAttribute('content', description);
+            
+            // URL
+            document.getElementById('ogUrl').setAttribute('content', fullUrl);
+            
+            // Imagen
+            if (imageUrl) {
+                document.getElementById('ogImage').setAttribute('content', imageUrl);
+                document.getElementById('twitterImage').setAttribute('content', imageUrl);
+            }
+        }
+        
         function showSingleArticle(news) {
             document.getElementById('heroSection').style.display = 'none';
-            
-            // Meta tags para compartir
-            document.getElementById('pageTitle').textContent = news.title + ' | Portal de Noticias';
-            document.getElementById('pageDescription').content = news.content.substring(0, 160);
-            document.getElementById('ogTitle').content = news.title;
-            document.getElementById('ogDescription').content = news.content.substring(0, 200);
+            updateMetaTags(news);
             
             const container = document.getElementById('newsContainer');
             const readTime = calculateReadTime(news.content);
-            const shareUrl = window.location.href;
             
             container.className = 'single-article';
             container.innerHTML = `
@@ -402,6 +434,7 @@
                     <button class="share-btn" onclick="copyLink()">🔗 Copiar enlace</button>
                     <button class="share-btn" onclick="shareTwitter()">🐦 Twitter</button>
                     <button class="share-btn" onclick="shareFacebook()">👍 Facebook</button>
+                    <button class="share-btn" onclick="shareWhatsApp()">💬 WhatsApp</button>
                 </div>
             `;
         }
@@ -466,6 +499,11 @@
         
         function shareFacebook() {
             window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+        }
+        
+        function shareWhatsApp() {
+            const text = document.querySelector('.article-title').textContent;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text + ' - ' + window.location.href)}`, '_blank');
         }
     </script>
 </body>
