@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS - Gestor de Noticias</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .form-container {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1em;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        .file-input-label {
+            display: block;
+            padding: 12px 15px;
+            background: #f5f5f5;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-label:hover {
+            background: #e8ebfa;
+            border-color: #764ba2;
+        }
+        
+        .image-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-publish {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-preview {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-preview:hover {
+            background: #e0e0e0;
+        }
+        
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            color: #856404;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .instructions code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📰 CMS de Noticias</h1>
+            <p>Gestiona y publica tus noticias fácilmente</p>
+        </div>
+        
+        <div class="form-container">
+            <div class="instructions">
+                <h3>🔑 Configuración requerida:</h3>
+                <ol>
+                    <li>Crea un <strong>Personal Access Token</strong> en GitHub: <code>Settings → Developer settings → Personal access tokens → Tokens (classic)</code></li>
+                    <li>Dale permisos de <code>repo</code> (acceso completo a repositorios)</li>
+                    <li>Copia el token y pégalo abajo cuando publiques una noticia</li>
+                </ol>
+            </div>
+            
+            <form id="newsForm">
+                <div class="form-group">
+                    <label for="title">📌 Título de la Noticia *</label>
+                    <input type="text" id="title" name="title" placeholder="Ej: Nueva actualización disponible" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="content">📝 Contenido de la Noticia *</label>
+                    <textarea id="content" name="content" placeholder="Escribe aquí el contenido completo de tu noticia..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">🖼️ Imagen (opcional)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="image" name="image" accept="image/*">
+                        <label for="image" class="file-input-label">
+                            📤 Haz clic para seleccionar una imagen
+                        </label>
+                    </div>
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="token">🔐 GitHub Personal Access Token *</label>
+                    <input type="password" id="token" name="token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
+                </div>
+                
+                <div class="btn-container">
+                    <button type="button" class="btn-preview" onclick="previewNews()">👁️ Vista Previa</button>
+                    <button type="submit" class="btn-publish">🚀 Publicar Noticia</button>
+                </div>
+            </form>
+            
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Preview de la imagen
+        document.getElementById('image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').innerHTML = 
+                        `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Vista previa
+        function previewNews() {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            
+            if (!title || !content) {
+                showMessage('Por favor completa el título y contenido', 'error');
+                return;
+            }
+            
+            const previewWindow = window.open('', '_blank');
+            previewWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Vista Previa: ${title}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+                        h1 { color: #333; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+                        .content { line-height: 1.8; color: #555; white-space: pre-wrap; }
+                        img { max-width: 100%; height: auto; border-radius: 10px; margin: 20px 0; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${title}</h1>
+                    <div class="content">${content}</div>
+                </body>
+                </html>
+            `);
+        }
+
+        // Publicar noticia
+        document.getElementById('newsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const token = document.getElementById('token').value;
+            const imageFile = document.getElementById('image').files[0];
+            
+            showMessage('📤 Publicando noticia...', 'success');
+            
+            try {
+                const timestamp = new Date().getTime();
+                const date = new Date().toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                let imageBase64 = '';
+                let imageName = '';
+                
+                // Si hay imagen, convertirla a base64
+                if (imageFile) {
+                    imageBase64 = await fileToBase64(imageFile);
+                    imageName = `img_${timestamp}.${imageFile.name.split('.').pop()}`;
+                    
+                    // Subir imagen a GitHub
+                    await uploadToGitHub(
+                        'RandyCorrea',
+                        'noticias',
+                        `images/${imageName}`,
+                        imageBase64.split(',')[1],
+                        `Agregar imagen: ${imageName}`,
+                        token
+                    );
+                }
+                
+                // Crear objeto de noticia
+                const newsData = {
+                    id: timestamp,
+                    title: title,
+                    content: content,
+                    image: imageName ? `images/${imageName}` : '',
+                    date: date,
+                    timestamp: timestamp
+                };
+                
+                // Obtener noticias existentes
+                let existingNews = [];
+                try {
+                    const newsResponse = await fetch('https://raw.githubusercontent.com/RandyCorrea/noticias/main/news-data.json');
+                    if (newsResponse.ok) {
+                        existingNews = await newsResponse.json();
+                    }
+                } catch (e) {
+                    console.log('No hay noticias previas');
+                }
+                
+                // Agregar nueva noticia al inicio
+                existingNews.unshift(newsData);
+                
+                // Subir JSON actualizado
+                const newsJson = JSON.stringify(existingNews, null, 2);
+                await uploadToGitHub(
+                    'RandyCorrea',
+                    'noticias',
+                    'news-data.json',
+                    btoa(unescape(encodeURIComponent(newsJson))),
+                    `Agregar noticia: ${title}`,
+                    token,
+                    true
+                );
+                
+                showMessage('✅ ¡Noticia publicada exitosamente! La página se actualizará en unos momentos.', 'success');
+                
+                // Limpiar formulario
+                document.getElementById('newsForm').reset();
+                document.getElementById('imagePreview').innerHTML = '';
+                
+            } catch (error) {
+                showMessage(`❌ Error: ${error.message}`, 'error');
+            }
+        });
+
+        // Función para convertir archivo a base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Función para subir archivos a GitHub
+        async function uploadToGitHub(owner, repo, path, content, message, token, update = false) {
+            let sha = '';
+            
+            // Si es actualización, obtener SHA del archivo existente
+            if (update) {
+                try {
+                    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        sha = data.sha;
+                    }
+                } catch (e) {
+                    console.log('Archivo no existe, se creará nuevo');
+                }
+            }
+            
+            const body = {
+                message: message,
+                content: content,
+                branch: 'main'
+            };
+            
+            if (sha) {
+                body.sha = sha;
+            }
+            
+            const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Error al subir archivo');
+            }
+            
+            return response.json();
+        }
+
+        // Mostrar mensajes
+        function showMessage(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message ${type}`;
+            statusDiv.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
