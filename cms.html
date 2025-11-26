@@ -6,16 +6,10 @@
     <title>CMS - Gestor de Noticias</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; padding: 20px; }
         #loginScreen { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         .login-box { background: white; padding: 50px 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-width: 400px; width: 100%; text-align: center; }
         .login-box h1 { font-size: 2em; margin-bottom: 10px; color: #1a1a2e; }
-        .login-box p { color: #666; margin-bottom: 30px; }
         .login-input { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1em; margin-bottom: 20px; }
         .login-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; border: none; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; }
         .error-message { color: #dc3545; font-size: 0.9em; margin-top: 10px; display: none; }
@@ -24,8 +18,8 @@
         .header h1 { font-size: 2em; color: #1a1a2e; }
         .logout-btn { background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
         .tabs { display: flex; gap: 10px; margin-bottom: 30px; }
-        .tab-btn { padding: 12px 30px; background: white; color: #666; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; }
-        .tab-btn.active { background: white; color: #1a1a2e; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .tab-btn { padding: 12px 30px; background: white; color: #666; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; }
+        .tab-btn.active { color: #1a1a2e; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .content-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -40,7 +34,7 @@
         button { padding: 15px 30px; font-size: 1.1em; font-weight: 600; border: none; border-radius: 10px; cursor: pointer; }
         .btn-primary { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; flex: 1; }
         .btn-secondary { background: #f0f0f0; color: #333; flex: 1; }
-        .status-message { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; }
+        .status-message { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; word-break: break-all; }
         .status-message.success { background: #d4edda; color: #155724; }
         .status-message.error { background: #f8d7da; color: #721c24; }
         .news-list { display: grid; gap: 20px; }
@@ -49,7 +43,7 @@
         .news-item h3 { color: #1a1a2e; font-size: 1.3em; margin-bottom: 8px; }
         .news-item .date { color: #666; font-size: 0.9em; }
         .news-item .excerpt { color: #555; line-height: 1.6; margin: 10px 0; }
-        .news-actions { display: flex; gap: 10px; }
+        .news-actions { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn-small { padding: 8px 15px; font-size: 0.9em; border-radius: 6px; cursor: pointer; }
         .btn-delete { background: #dc3545; color: white; border: none; }
         .btn-copy { background: #17a2b8; color: white; border: none; }
@@ -58,197 +52,93 @@
     </style>
 </head>
 <body>
-    <div id="loginScreen">
-        <div class="login-box">
-            <h1>🔒 Acceso al CMS</h1>
-            <p>Ingresa la contraseña</p>
-            <input type="password" id="passwordInput" class="login-input" placeholder="Contraseña">
-            <button class="login-btn" onclick="checkPassword()">🔑 Acceder</button>
-            <div id="loginError" class="error-message">Contraseña incorrecta</div>
-            <div style="margin-top: 20px; color: #999; font-size: 0.9em;">Contraseña por defecto: <code style="background: #f5f5f5; padding: 2px 8px;">admin2025</code></div>
-        </div>
-    </div>
-    <div id="cmsScreen">
-        <div class="header">
-            <h1>📰 CMS de Noticias</h1>
-            <button class="logout-btn" onclick="logout()">🚪 Cerrar Sesión</button>
-        </div>
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('create')">➕ Crear Noticia</button>
-            <button class="tab-btn" onclick="switchTab('manage')">📋 Gestionar Noticias</button>
-        </div>
-        <div id="createTab" class="tab-content active">
-            <div class="content-box">
-                <div class="instructions">
-                    <h3>🔑 Necesitas un GitHub Personal Access Token</h3>
-                    <p>Crea uno en: Settings → Developer settings → Personal access tokens → Tokens (classic)</p>
-                    <p>Permisos: <code>repo</code></p>
-                </div>
-                <form id="newsForm">
-                    <div class="form-group"><label>📌 Título *</label><input type="text" id="title" required></div>
-                    <div class="form-group"><label>📝 Contenido *</label><textarea id="content" required></textarea></div>
-                    <div class="form-group">
-                        <label>🖼️ Imagen (opcional)</label>
-                        <input type="file" id="image" accept="image/*" style="display:none">
-                        <label for="image" class="file-input-label">📤 Seleccionar imagen</label>
-                        <div id="imagePreview" class="image-preview"></div>
-                    </div>
-                    <div class="form-group"><label>🔐 GitHub Token *</label><input type="password" id="token" required></div>
-                    <div class="btn-container">
-                        <button type="button" class="btn-secondary" onclick="previewNews()">👁️ Vista Previa</button>
-                        <button type="submit" class="btn-primary">🚀 Publicar</button>
-                    </div>
-                </form>
-                <div id="statusMessage" class="status-message"></div>
-            </div>
-        </div>
-        <div id="manageTab" class="tab-content">
-            <div class="content-box">
-                <div class="form-group"><label>🔐 GitHub Token (para eliminar) *</label><input type="password" id="manageToken" placeholder="Necesario para eliminar noticias"></div>
-                <div id="newsList" class="loading">Cargando noticias...</div>
-            </div>
-        </div>
-    </div>
+    <div id="loginScreen"><div class="login-box"><h1>🔒 CMS</h1><p>Contraseña</p><input type="password" id="passwordInput" class="login-input"><button class="login-btn" onclick="checkPassword()">🔑 Acceder</button><div id="loginError" class="error-message">Incorrecta</div><div style="margin-top:20px;color:#999;font-size:0.9em;">Por defecto: <code style="background:#f5f5f5;padding:2px 8px;">admin2025</code></div></div></div>
+    <div id="cmsScreen"><div class="header"><h1>📰 CMS</h1><button class="logout-btn" onclick="logout()">🚪 Salir</button></div><div class="tabs"><button class="tab-btn active" onclick="switchTab('create')">➕ Crear</button><button class="tab-btn" onclick="switchTab('manage')">📋 Gestionar</button></div><div id="createTab" class="tab-content active"><div class="content-box"><div class="instructions"><h3>🔑 GitHub Token</h3><p>Settings → Developer settings → Tokens (classic) → Permisos: <code>repo</code></p></div><form id="newsForm"><div class="form-group"><label>📌 Título *</label><input type="text" id="title" required></div><div class="form-group"><label>📝 Contenido *</label><textarea id="content" required></textarea></div><div class="form-group"><label>🖼️ Imagen *</label><input type="file" id="image" accept="image/*" style="display:none" required><label for="image" class="file-input-label">📤 Seleccionar imagen (OBLIGATORIA para redes sociales)</label><div id="imagePreview" class="image-preview"></div></div><div class="form-group"><label>🔐 Token *</label><input type="password" id="token" required></div><div class="btn-container"><button type="button" class="btn-secondary" onclick="previewNews()">👁️ Preview</button><button type="submit" class="btn-primary">🚀 Publicar</button></div></form><div id="statusMessage" class="status-message"></div></div></div><div id="manageTab" class="tab-content"><div class="content-box"><div class="form-group"><label>🔐 Token *</label><input type="password" id="manageToken"></div><div id="newsList" class="loading">Cargando...</div></div></div></div>
     <script>
-        const CMS_PASSWORD = 'admin2025';
-        let allNews = [];
-        let imageWidth = 0, imageHeight = 0;
+        const CMS_PASSWORD='admin2025',OWNER='RandyCorrea',REPO='noticias';let allNews=[],imgW=0,imgH=0;
+        window.addEventListener('DOMContentLoaded',()=>{if(sessionStorage.getItem('cms_logged_in')==='true')showCMS();document.getElementById('passwordInput').addEventListener('keypress',e=>{if(e.key==='Enter')checkPassword();});});
+        function checkPassword(){if(document.getElementById('passwordInput').value===CMS_PASSWORD){sessionStorage.setItem('cms_logged_in','true');showCMS();}else{document.getElementById('loginError').style.display='block';}}
+        function showCMS(){document.getElementById('loginScreen').style.display='none';document.getElementById('cmsScreen').style.display='block';loadNewsList();}
+        function logout(){sessionStorage.removeItem('cms_logged_in');location.reload();}
+        function switchTab(tab){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));event.target.classList.add('active');document.getElementById(tab+'Tab').classList.add('active');if(tab==='manage')loadNewsList();}
+        document.getElementById('image').addEventListener('change',function(e){const file=e.target.files[0];if(file){const reader=new FileReader();reader.onload=e=>{const img=new Image();img.onload=function(){imgW=this.width;imgH=this.height;document.getElementById('imagePreview').innerHTML=`<img src="${e.target.result}"><div style="color:#666;font-size:0.9em;margin-top:10px;">Dimensiones: ${imgW}x${imgH}px</div>`;};img.src=e.target.result;};reader.readAsDataURL(file);}});
+        function previewNews(){const t=document.getElementById('title').value,c=document.getElementById('content').value;if(!t||!c)return alert('Completa título y contenido');const w=window.open('','_blank');w.document.write(`<h1>${t}</h1><div style="white-space:pre-wrap">${c}</div>`);}
         
-        window.addEventListener('DOMContentLoaded', function() {
-            if (sessionStorage.getItem('cms_logged_in') === 'true') showCMS();
-            document.getElementById('passwordInput').addEventListener('keypress', e => { if (e.key === 'Enter') checkPassword(); });
-        });
-        
-        function checkPassword() {
-            if (document.getElementById('passwordInput').value === CMS_PASSWORD) {
-                sessionStorage.setItem('cms_logged_in', 'true');
-                showCMS();
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-            }
-        }
-        function showCMS() { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('cmsScreen').style.display = 'block'; loadNewsList(); }
-        function logout() { sessionStorage.removeItem('cms_logged_in'); location.reload(); }
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(tab + 'Tab').classList.add('active');
-            if (tab === 'manage') loadNewsList();
-        }
-        
-        document.getElementById('image').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        imageWidth = this.width;
-                        imageHeight = this.height;
-                        document.getElementById('imagePreview').innerHTML = `<img src="${e.target.result}"><div style="color:#666;font-size:0.9em;margin-top:10px;">Dimensiones: ${imageWidth}x${imageHeight}px</div>`;
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        function previewNews() {
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
-            if (!title || !content) return alert('Completa título y contenido');
-            const w = window.open('', '_blank');
-            w.document.write(`<h1>${title}</h1><div style="white-space:pre-wrap">${content}</div>`);
-        }
-        
-        document.getElementById('newsForm').addEventListener('submit', async function(e) {
+        document.getElementById('newsForm').addEventListener('submit',async function(e){
             e.preventDefault();
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
-            const token = document.getElementById('token').value;
-            const imageFile = document.getElementById('image').files[0];
-            showMessage('Publicando...', 'success');
-            
-            try {
-                const timestamp = Date.now();
-                const date = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                let imageName = '', imgWidth = 0, imgHeight = 0;
+            const title=document.getElementById('title').value,content=document.getElementById('content').value,token=document.getElementById('token').value,imageFile=document.getElementById('image').files[0];
+            if(!imageFile){alert('La imagen es OBLIGATORIA para que funcionen las redes sociales');return;}
+            showMessage('Publicando...','success');
+            try{
+                const ts=Date.now(),date=new Date().toLocaleDateString('es-ES',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+                const imageBase64=await fileToBase64(imageFile),imageName=`img_${ts}.${imageFile.name.split('.').pop()}`;
+                showMessage('Subiendo imagen...','success');
+                await uploadToGitHub(OWNER,REPO,`images/${imageName}`,imageBase64.split(',')[1],`Imagen: ${imageName}`,token);
                 
-                if (imageFile) {
-                    const imageBase64 = await fileToBase64(imageFile);
-                    imageName = `img_${timestamp}.${imageFile.name.split('.').pop()}`;
-                    imgWidth = imageWidth;
-                    imgHeight = imageHeight;
-                    await uploadToGitHub('RandyCorrea', 'noticias', `images/${imageName}`, imageBase64.split(',')[1], `Imagen: ${imageName}`, token);
-                }
+                const excerpt=content.substring(0,150).replace(/"/g,"'"),readTime=Math.ceil(content.split(' ').length/200);
+                const htmlFile=`posts/${ts}.html`,fullImgUrl=`https://${OWNER}.github.io/${REPO}/images/${imageName}`,articleUrl=`https://${OWNER}.github.io/${REPO}/${htmlFile}`;
                 
-                const newsData = {
-                    id: timestamp,
-                    title: title,
-                    content: content,
-                    image: imageName ? `images/${imageName}` : '',
-                    imageWidth: imgWidth,
-                    imageHeight: imgHeight,
-                    date: date,
-                    timestamp: timestamp
-                };
+                const newsData={id:ts,title:title,content:content,excerpt:excerpt,image:`images/${imageName}`,imageWidth:imgW,imageHeight:imgH,date:date,timestamp:ts,url:htmlFile};
                 
-                let existingNews = [];
-                try {
-                    const r = await fetch('https://raw.githubusercontent.com/RandyCorrea/noticias/main/news-data.json');
-                    if (r.ok) existingNews = await r.json();
-                } catch(e) {}
+                showMessage('Generando página estática...','success');
+                const articleHTML=`<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title} | Portal de Noticias</title>
+    <meta name="description" content="${excerpt}">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Portal de Noticias">
+    <meta property="og:title" content="${title}">
+    <meta property="og:description" content="${excerpt}">
+    <meta property="og:image" content="${fullImgUrl}">
+    <meta property="og:image:width" content="${imgW}">
+    <meta property="og:image:height" content="${imgH}">
+    <meta property="og:url" content="${articleUrl}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${title}">
+    <meta name="twitter:description" content="${excerpt}">
+    <meta name="twitter:image" content="${fullImgUrl}">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;line-height:1.6}.header{border-bottom:1px solid #e6e6e6;padding:20px 0;position:sticky;top:0;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);z-index:100}.header-content{max-width:740px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center}.site-title{font-family:'Merriweather',serif;font-size:1.5em;font-weight:900;color:#1a1a1a;text-decoration:none}.back-link{color:#6b6b6b;text-decoration:none;font-size:0.95em}.back-link:hover{color:#1a1a1a}.article{max-width:740px;margin:60px auto;padding:0 24px}.article-title{font-family:'Merriweather',serif;font-size:3em;font-weight:700;line-height:1.2;margin-bottom:24px;color:#1a1a1a}.article-meta{display:flex;align-items:center;gap:16px;margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid #e6e6e6;color:#6b6b6b;font-size:0.95em}.article-image{width:100%;max-height:500px;object-fit:cover;margin-bottom:40px;border-radius:4px}.article-text{font-family:'Merriweather',serif;font-size:1.25em;line-height:1.8;color:#1a1a1a;white-space:pre-wrap;word-wrap:break-word}.share-buttons{margin-top:60px;padding-top:40px;border-top:1px solid #e6e6e6;display:flex;gap:15px;flex-wrap:wrap;align-items:center}.share-btn{padding:10px 20px;background:#f5f5f5;border:none;border-radius:20px;cursor:pointer;font-size:0.9em;text-decoration:none;color:#1a1a1a}.share-btn:hover{background:#e0e0e0}@media(max-width:768px){.article-title{font-size:2em}.article-text{font-size:1.1em}}
+    </style>
+</head>
+<body>
+    <header class="header"><div class="header-content"><a href="../index.html" class="site-title">Portal de Noticias</a><a href="../index.html" class="back-link">← Inicio</a></div></header>
+    <article class="article">
+        <h1 class="article-title">${title}</h1>
+        <div class="article-meta"><span>${date}</span><span>·</span><span>${readTime} min de lectura</span></div>
+        <img src="../${newsData.image}" alt="${title}" class="article-image">
+        <div class="article-text">${content}</div>
+        <div class="share-buttons"><span style="color:#6b6b6b">Compartir:</span><button class="share-btn" onclick="navigator.clipboard.writeText(location.href);alert('Copiado')">🔗 Copiar</button><a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(articleUrl)}" target="_blank" class="share-btn">🐦 Twitter</a><a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}" target="_blank" class="share-btn">👍 Facebook</a><a href="https://wa.me/?text=${encodeURIComponent(title+' - '+articleUrl)}" target="_blank" class="share-btn">💬 WhatsApp</a></div>
+    </article>
+</body>
+</html>`;
                 
+                showMessage('Subiendo página HTML...','success');
+                await uploadToGitHub(OWNER,REPO,htmlFile,btoa(unescape(encodeURIComponent(articleHTML))),`Nueva noticia: ${title}`,token);
+                
+                showMessage('Actualizando índice...','success');
+                let existingNews=[];
+                try{const r=await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/main/news-data.json`);if(r.ok)existingNews=await r.json();}catch(e){}
                 existingNews.unshift(newsData);
-                await uploadToGitHub('RandyCorrea', 'noticias', 'news-data.json', btoa(unescape(encodeURIComponent(JSON.stringify(existingNews, null, 2)))), `Nueva noticia: ${title}`, token, true);
-                showMessage('✅ ¡Publicado! URL: https://randycorrea.github.io/noticias/?id=' + timestamp, 'success');
+                await uploadToGitHub(OWNER,REPO,'news-data.json',btoa(unescape(encodeURIComponent(JSON.stringify(existingNews,null,2)))),`Actualizar índice`,token,true);
+                
+                showMessage(`✅ ¡Publicado! URL: ${articleUrl}`,'success');
                 document.getElementById('newsForm').reset();
-                document.getElementById('imagePreview').innerHTML = '';
-                imageWidth = 0;
-                imageHeight = 0;
-            } catch(error) {
-                showMessage('❌ Error: ' + error.message, 'error');
-            }
+                document.getElementById('imagePreview').innerHTML='';
+                imgW=0;imgH=0;
+            }catch(error){showMessage('❌ Error: '+error.message,'error');}
         });
         
-        async function loadNewsList() {
-            const container = document.getElementById('newsList');
-            container.innerHTML = '<div class="loading">Cargando...</div>';
-            try {
-                const r = await fetch('https://raw.githubusercontent.com/RandyCorrea/noticias/main/news-data.json?t=' + Date.now());
-                if (!r.ok) throw new Error('Sin noticias');
-                allNews = await r.json();
-                if (allNews.length === 0) { container.innerHTML = '<p style="text-align:center;color:#666;">No hay noticias</p>'; return; }
-                container.innerHTML = '<div class="news-list">' + allNews.map(news => `<div class="news-item"><div class="news-item-header"><div><h3>${news.title}</h3><div class="date">📅 ${news.date}</div></div><div class="news-actions"><button class="btn-small btn-copy" onclick="copyURL('${news.id}')">🔗 Copiar URL</button><button class="btn-small btn-delete" onclick="deleteNews('${news.id}')">🗑️ Eliminar</button></div></div><div class="excerpt">${news.content.substring(0, 200)}...</div></div>`).join('') + '</div>';
-            } catch(e) {
-                container.innerHTML = '<p style="text-align:center;color:#666;">Error al cargar</p>';
-            }
-        }
-        
-        function copyURL(id) { navigator.clipboard.writeText(`https://randycorrea.github.io/noticias/?id=${id}`); alert('✅ URL copiada'); }
-        async function deleteNews(id) {
-            const token = document.getElementById('manageToken').value;
-            if (!token) return alert('Ingresa tu GitHub token primero');
-            if (!confirm('¿Eliminar esta noticia?')) return;
-            try {
-                await uploadToGitHub('RandyCorrea', 'noticias', 'news-data.json', btoa(unescape(encodeURIComponent(JSON.stringify(allNews.filter(n => n.id != id), null, 2)))), `Eliminar noticia ID: ${id}`, token, true);
-                alert('✅ Noticia eliminada');
-                loadNewsList();
-            } catch(e) { alert('❌ Error: ' + e.message); }
-        }
-        
-        function fileToBase64(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); }); }
-        async function uploadToGitHub(owner, repo, path, content, message, token, update = false) {
-            let sha = '';
-            if (update) { try { const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, { headers: { 'Authorization': `token ${token}` } }); if (r.ok) sha = (await r.json()).sha; } catch(e) {} }
-            const body = { message, content, branch: 'main' };
-            if (sha) body.sha = sha;
-            const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, { method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-            if (!r.ok) throw new Error((await r.json()).message || 'Error');
-            return r.json();
-        }
-        function showMessage(message, type) { const div = document.getElementById('statusMessage'); div.textContent = message; div.className = `status-message ${type}`; div.style.display = 'block'; if (type === 'success') setTimeout(() => div.style.display = 'none', 8000); }
+        async function loadNewsList(){const container=document.getElementById('newsList');container.innerHTML='<div class="loading">Cargando...</div>';try{const r=await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/main/news-data.json?t=`+Date.now());if(!r.ok)throw new Error('Sin noticias');allNews=await r.json();if(allNews.length===0){container.innerHTML='<p style="text-align:center;color:#666;">No hay noticias</p>';return;}container.innerHTML='<div class="news-list">'+allNews.map(n=>`<div class="news-item"><div class="news-item-header"><div><h3>${n.title}</h3><div class="date">📅 ${n.date}</div></div><div class="news-actions"><button class="btn-small btn-copy" onclick="copyURL('${n.url||'posts/'+n.id+'.html'}')">🔗 URL</button><button class="btn-small btn-delete" onclick="deleteNews(${n.id})">🗑️ Eliminar</button></div></div><div class="excerpt">${n.content.substring(0,200)}...</div></div>`).join('')+'</div>';}catch(e){container.innerHTML='<p style="text-align:center;color:#666;">Error</p>';}}
+        function copyURL(url){navigator.clipboard.writeText(`https://${OWNER}.github.io/${REPO}/${url}`);alert('✅ URL copiada');}
+        async function deleteNews(id){const token=document.getElementById('manageToken').value;if(!token)return alert('Ingresa token');if(!confirm('¿Eliminar?'))return;try{await uploadToGitHub(OWNER,REPO,'news-data.json',btoa(unescape(encodeURIComponent(JSON.stringify(allNews.filter(n=>n.id!=id),null,2)))),`Eliminar ${id}`,token,true);alert('✅ Eliminada');loadNewsList();}catch(e){alert('❌ Error: '+e.message);}}
+        function fileToBase64(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});}
+        async function uploadToGitHub(owner,repo,path,content,message,token,update=false){let sha='';if(update){try{const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{headers:{'Authorization':`token ${token}`}});if(r.ok)sha=(await r.json()).sha;}catch(e){}}const body={message,content,branch:'main'};if(sha)body.sha=sha;const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{method:'PUT',headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error((await r.json()).message||'Error');return r.json();}
+        function showMessage(message,type){const div=document.getElementById('statusMessage');div.textContent=message;div.className=`status-message ${type}`;div.style.display='block';if(type==='success')setTimeout(()=>div.style.display='none',8000);}
     </script>
 </body>
 </html>
