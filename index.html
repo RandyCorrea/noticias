@@ -102,11 +102,26 @@
             } catch (error) { showNoNews(); }
         }
         function calculateReadTime(text) { return `${Math.ceil(text.split(/\s+/).length / 200)} min de lectura`; }
-        function updateMetaTags(news) {
+        
+        async function getImageDimensions(imageUrl) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = function() {
+                    resolve({ width: this.width, height: this.height });
+                };
+                img.onerror = function() {
+                    resolve({ width: 1200, height: 630 });
+                };
+                img.src = imageUrl;
+            });
+        }
+        
+        async function updateMetaTags(news) {
             const baseUrl = window.location.origin + window.location.pathname;
             const fullUrl = window.location.href;
             const description = news.content.substring(0, 160).replace(/\n/g, ' ');
             const imageUrl = news.image ? (baseUrl.replace('/index.html', '/').replace(/\/$/, '') + '/' + news.image) : '';
+            
             document.getElementById('pageTitle').textContent = news.title + ' | Portal de Noticias';
             document.getElementById('ogTitle').setAttribute('content', news.title);
             document.getElementById('twitterTitle').setAttribute('content', news.title);
@@ -114,15 +129,25 @@
             document.getElementById('ogDescription').setAttribute('content', description);
             document.getElementById('twitterDescription').setAttribute('content', description);
             document.getElementById('ogUrl').setAttribute('content', fullUrl);
+            
             if (imageUrl) {
                 document.getElementById('ogImage').setAttribute('content', imageUrl);
                 document.getElementById('twitterImage').setAttribute('content', imageUrl);
-                if (news.imageWidth && news.imageHeight) {
-                    document.getElementById('ogImageWidth').setAttribute('content', news.imageWidth);
-                    document.getElementById('ogImageHeight').setAttribute('content', news.imageHeight);
+                
+                let width = news.imageWidth || 1200;
+                let height = news.imageHeight || 630;
+                
+                if (!news.imageWidth || !news.imageHeight) {
+                    const dims = await getImageDimensions(imageUrl);
+                    width = dims.width;
+                    height = dims.height;
                 }
+                
+                document.getElementById('ogImageWidth').setAttribute('content', width);
+                document.getElementById('ogImageHeight').setAttribute('content', height);
             }
         }
+        
         function showSingleArticle(news) {
             document.getElementById('heroSection').style.display = 'none';
             updateMetaTags(news);
