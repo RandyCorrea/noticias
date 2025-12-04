@@ -5,111 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InstaNews</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        * { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
-        body { background: #fafafa; }
-        .post-image { aspect-ratio: 1 / 1; object-fit: cover; width: 100%; }
-        .video-container { width: 100%; aspect-ratio: 16 / 9; background: #000; }
-        .video-container iframe { width: 100%; height: 100%; border: none; }
-        .story { width: 60px; height: 80px; border-radius: 12px; cursor: pointer; overflow: hidden; border: 2px solid #ff6b6b; }
-        .story img { width: 100%; height: 100%; object-fit: cover; }
-    </style>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-gray-50">
-    <div class="flex justify-center min-h-screen">
-        <div class="w-full max-w-md bg-white">
-            <header class="sticky top-0 z-40 border-b px-4 py-3">
-                <h1 class="text-2xl font-bold italic">InstaNews</h1>
+<body class="bg-gray-50 dark:bg-black">
+    <div class="min-h-screen flex justify-center">
+        <div class="w-full max-w-md bg-white dark:bg-black shadow-sm border-x border-gray-200 dark:border-gray-800">
+            <header class="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 h-14 flex items-center justify-between">
+                <a href="index.html" class="text-xl font-bold italic">InstaNews</a>
             </header>
-
-            <div id="storiesContainer" class="border-b px-4 py-3 flex gap-2 overflow-x-auto"></div>
-
-            <main id="feed" class="pb-20"></main>
-
-            <nav class="fixed bottom-0 w-full max-w-md bg-white border-t flex justify-around h-12">
-                <button onclick="goHome()" class="flex-1 flex items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                </button>
-                <button onclick="toggleSearch()" class="flex-1 flex items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24">ircle cx="10" cy="10" r="6"/><path d="m14 14 4 4"/></svg>
-                </button>
-                <button onclick="showProfile()" class="flex-1 flex items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24">ircle cx="12" cy="8" r="4"/><path d="M 4 20c0-4 3.5-7 8-7s8 3 8 7"/></svg>
-                </button>
+            <main id="feed" class="pb-16"></main>
+            <nav class="fixed bottom-0 w-full max-w-md bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 h-12 flex justify-around z-50">
+                <a href="index.html" class="flex items-center justify-center p-2"><i data-lucide="home" class="w-6 h-6"></i></a>
+                <button onclick="showProfile()" class="flex items-center justify-center p-2"><i data-lucide="user" class="w-6 h-6"></i></button>
             </nav>
         </div>
     </div>
 
     <script>
-        const REPO_OWNER = 'RandyCorrea';
-        const REPO_NAME = 'noticias';
+        const REPO = 'RandyCorrea/noticias';
         let newsData = [];
         let likedNews = JSON.parse(localStorage.getItem('likedNews') || '[]');
 
-        document.addEventListener('DOMContentLoaded', loadNews);
-
         async function loadNews() {
             try {
-                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/news-data.json`);
-                if (!response.ok) return;
-                const data = await response.json();
-                const content = decodeURIComponent(escape(atob(data.content)));
-                newsData = JSON.parse(content).news || [];
+                const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/news-data.json`);
+                const data = await resp.json();
+                newsData = JSON.parse(atob(data.content)).news || [];
                 renderFeed();
-            } catch (error) {
-                console.error('Error:', error);
-            }
+                lucide.createIcons();
+            } catch (e) { console.error(e); }
         }
 
         function renderFeed() {
-            const feed = document.getElementById('feed');
-            feed.innerHTML = newsData.map((post) => {
-                const isLiked = likedNews.includes(post.id);
-                return `
-                    <article class="border-b">
-                        <div class="px-4 py-3 flex justify-between">
-                            <div><p class="font-bold text-sm">${post.author || 'Noticias'}</p></div>
-                            <button>⋯</button>
+            document.getElementById('feed').innerHTML = newsData.map(post => `
+                <article class="border-b border-gray-200 dark:border-gray-800">
+                    <div class="px-4 py-3 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-500"></div>
+                            <div><p class="font-semibold text-sm">${post.author || 'Noticias'}</p></div>
                         </div>
-                        ${post.videoEmbed ? `<div class="video-container">${post.videoEmbed}</div>` : post.image ? `<img src="${post.image}" class="post-image" onclick="openPost('${post.slug}')">` : ''}
-                        <div class="px-4 pt-3 pb-2 flex gap-4">
-                            <button onclick="toggleLike('${post.id}')">${isLiked ? '❤️' : '🤍'}</button>
-                            <button onclick="openPost('${post.slug}')" style="fill: #ed4956;">
-                                <svg width="20" height="20" viewBox="0 0 24 24"><path d="M20.656 17.008l-2.72-2.72m.992-1.476A6.5 6.5 0 1119 9.5a6.5 6.5 0 01-6.744 6.976l.016.016z"/></svg>
-                            </button>
-                            <button onclick="sharePost('${post.slug}')" style="fill: #262626;">
-                                <svg width="20" height="20" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" stroke-width="2"/><polygon points="22 2 15 22 11 13 2 9"/></svg>
-                            </button>
-                            <button style="margin-left: auto; fill: #262626;">
-                                <svg width="20" height="20" viewBox="0 0 24 24"><path d="M20 21H4a1 1 0 01-1-1V3a1 1 0 011-1h16a1 1 0 011 1v17a1 1 0 01-1 1z"/></svg>
-                            </button>
-                        </div>
-                        <div class="px-4 pb-3">
-                            <p class="font-bold text-sm">${post.title}</p>
-                            <p class="text-sm text-gray-600">${post.excerpt}</p>
-                            <button onclick="openPost('${post.slug}')" class="text-xs text-gray-500 mt-2 font-bold">LEER MÁS</button>
-                        </div>
-                    </article>
-                `;
-            }).join('');
+                        <button><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                    </div>
+                    ${post.videoEmbed ? `<div style="width:100%;aspect-ratio:1/1;background:#000">${post.videoEmbed}</div>` : post.image ? `<img src="${post.image}" class="w-full" style="aspect-ratio:1/1;object-fit:cover">` : ''}
+                    <div class="px-4 py-3 flex gap-4">
+                        <button onclick="toggleLike('${post.id}')"><i data-lucide="heart" class="w-6 h-6 ${likedNews.includes(post.id) ? 'fill-red-500 text-red-500' : ''}"></i></button>
+                        <button><i data-lucide="message-circle" class="w-6 h-6"></i></button>
+                        <button><i data-lucide="send" class="w-6 h-6"></i></button>
+                        <button class="ml-auto"><i data-lucide="bookmark" class="w-6 h-6"></i></button>
+                    </div>
+                    <div class="px-4 pb-3">
+                        <p class="font-bold text-sm">${post.title}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${post.excerpt}</p>
+                        <button onclick="window.location.href='posts/${post.slug}.html'" class="text-xs font-bold text-blue-500 mt-2">LEER MÁS</button>
+                    </div>
+                </article>
+            `).join('');
+            lucide.createIcons();
         }
 
-        function toggleLike(postId) {
-            if (likedNews.includes(postId)) {
-                likedNews = likedNews.filter(id => id !== postId);
-            } else {
-                likedNews.push(postId);
-            }
+        function toggleLike(id) {
+            if (likedNews.includes(id)) likedNews = likedNews.filter(x => x !== id);
+            else likedNews.push(id);
             localStorage.setItem('likedNews', JSON.stringify(likedNews));
             renderFeed();
         }
 
-        function toggleSearch() { alert('Buscar noticias'); }
-        function showProfile() { alert('Tu perfil con favoritos'); }
-        function openPost(slug) { window.location.href = `posts/${slug}.html`; }
-        function sharePost(slug) { alert('Compartir: posts/' + slug + '.html'); }
-        function goHome() { window.location.reload(); }
+        function showProfile() { alert('Perfil: ' + likedNews.length + ' favoritos'); }
+
+        loadNews();
     </script>
 </body>
 </html>
-
