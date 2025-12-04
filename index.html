@@ -3,89 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InstaNews - Noticias con Estilo</title>
+    <title>InstaNews</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="css/styles.css">
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-        }
-        .post-image {
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-        }
-        .like-animation {
-            animation: heartBeat 0.3s ease-in-out;
-        }
-        @keyframes heartBeat {
-            0%, 100% { transform: scale(1); }
-            25% { transform: scale(1.3); }
-            50% { transform: scale(1.1); }
-        }
+        * { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
+        body { background: #fafafa; }
+        .post-image { aspect-ratio: 1 / 1; object-fit: cover; width: 100%; }
+        .post-image.vertical { aspect-ratio: auto; max-height: 600px; }
+        .video-container { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+        .video-container iframe { width: 100%; height: 100%; border: none; }
+        .story { width: 60px; height: 80px; border-radius: 12px; background: #e0e0e0; cursor: pointer; position: relative; overflow: hidden; }
+        .story img { width: 100%; height: 100%; object-fit: cover; }
+        .story-ring { border: 2px solid #ff6b6b; }
+        .grid-item { aspect-ratio: 1 / 1; }
+        .grid-item img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-black text-gray-900 dark:text-white">
-    <!-- Mobile Container -->
-    <div class="min-h-screen flex justify-center">
-        <div class="w-full max-w-md bg-white dark:bg-black shadow-sm">
+<body class="bg-gray-50">
+    <div class="flex justify-center min-h-screen">
+        <div class="w-full max-w-md bg-white">
             <!-- Header -->
-            <header class="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 h-14 flex items-center justify-between">
-                <a href="index.html" class="text-xl font-bold tracking-tighter italic">InstaNews</a>
-                <button onclick="openSettings()" class="w-6 h-6">
-                    <i data-lucide="settings" class="w-6 h-6"></i>
-                </button>
+            <header class="sticky top-0 z-40 border-b border-gray-200 px-4 py-3">
+                <h1 class="text-2xl font-bold italic">InstaNews</h1>
             </header>
 
+            <!-- Stories -->
+            <div id="storiesContainer" class="border-b border-gray-200 px-4 py-3 flex gap-2 overflow-x-auto">
+                <!-- Historias se cargan aqui -->
+            </div>
+
             <!-- Feed -->
-            <main id="feed" class="pb-16">
-                <!-- Posts se cargarán aquí -->
+            <main id="feed" class="pb-20">
+                <!-- Posts se cargan aqui -->
             </main>
 
             <!-- Bottom Navigation -->
-            <nav class="fixed bottom-0 w-full max-w-md bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 h-12 flex items-center justify-around">
-                <a href="index.html" class="p-2 text-gray-900 dark:text-white">
-                    <i data-lucide="home" class="w-6 h-6"></i>
-                </a>
-                <a href="cms.html" class="p-2 text-gray-900 dark:text-white">
-                    <i data-lucide="plus" class="w-6 h-6"></i>
-                </a>
-                <button onclick="showLiked()" class="p-2 text-gray-900 dark:text-white">
-                    <i data-lucide="heart" class="w-6 h-6"></i>
-                </button>
-                <button onclick="showProfile()" class="p-2 text-gray-900 dark:text-white">
-                    <i data-lucide="user" class="w-6 h-6"></i>
-                </button>
+            <nav class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-200 flex justify-around h-12">
+                <button onclick="goHome()" class="flex-1 flex items-center justify-center text-2xl" title="Inicio">🏠</button>
+                <button onclick="toggleSearch()" class="flex-1 flex items-center justify-center text-2xl" title="Buscar">🔍</button>
+                <button onclick="toggleLiked()" class="flex-1 flex items-center justify-center text-2xl" title="Favoritos">❤️</button>
+                <button onclick="showProfile()" class="flex-1 flex items-center justify-center text-2xl" title="Perfil">👤</button>
             </nav>
         </div>
     </div>
 
-    <!-- Modal para compartir -->
-    <dialog id="shareDialog" class="backdrop:bg-black/50 rounded-lg p-6 max-w-sm" backdrop>
-        <h2 class="text-xl font-semibold mb-4">Compartir en</h2>
-        <div class="flex gap-4 mb-4">
-            <button onclick="shareOn('whatsapp')" class="flex-1 p-2 bg-green-500 text-white rounded">WhatsApp</button>
-            <button onclick="shareOn('twitter')" class="flex-1 p-2 bg-blue-400 text-white rounded">Twitter</button>
-            <button onclick="shareOn('facebook')" class="flex-1 p-2 bg-blue-600 text-white rounded">Facebook</button>
+    <!-- Search Modal -->
+    <dialog id="searchModal" class="rounded-lg p-6 max-w-sm" backdrop>
+        <h2 class="text-xl font-bold mb-4">Buscar</h2>
+        <input type="text" id="searchInput" placeholder="Buscar noticias..." class="w-full border rounded-lg p-2 mb-4">
+        <div id="searchResults" class="space-y-2 max-h-64 overflow-y-auto"></div>
+        <button onclick="document.getElementById('searchModal').close()" class="w-full bg-gray-200 p-2 rounded mt-4">Cerrar</button>
+    </dialog>
+
+    <!-- Profile Grid Modal -->
+    <dialog id="profileModal" class="backdrop:bg-black/50 rounded-lg max-w-2xl w-full max-h-[90vh]" backdrop>
+        <div class="p-6">
+            <h2 class="text-2xl font-bold mb-2">Perfil</h2>
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-pink-600"></div>
+                <div>
+                    <p class="font-bold" id="profileAuthor">Noticias</p>
+                    <p class="text-gray-500 text-sm" id="profileHandle">@noticias</p>
+                </div>
+            </div>
+            <h3 class="font-bold mb-3">Tus Favoritos</h3>
+            <div id="profileGrid" class="grid grid-cols-3 gap-2">
+                <!-- Grid de noticias favoritas -->
+            </div>
+            <form method="dialog">
+                <button class="w-full bg-gray-200 p-2 rounded mt-4">Cerrar</button>
+            </form>
         </div>
-        <button onclick="shareOn('copy')" class="w-full p-2 bg-gray-200 dark:bg-gray-700 rounded mb-2">Copiar enlace</button>
-        <form method="dialog" class="flex gap-2">
-            <button type="submit" class="flex-1 p-2 bg-gray-200 dark:bg-gray-700 rounded">Cancelar</button>
-        </form>
     </dialog>
 
     <script>
         const REPO_OWNER = 'RandyCorrea';
         const REPO_NAME = 'noticias';
         let newsData = [];
-        let likes = JSON.parse(localStorage.getItem('newsLikes') || '{}');
-        let currentSharePost = null;
+        let likedNews = JSON.parse(localStorage.getItem('likedNews') || '[]');
+        let currentAuthor = 'Noticias';
+        let currentHandle = '@noticias';
+        let currentAuthorAvatar = 'N';
 
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            loadNews();
-        });
+        document.addEventListener('DOMContentLoaded', loadNews);
 
         async function loadNews() {
             try {
@@ -93,59 +93,87 @@
                 if (!response.ok) return;
                 const data = await response.json();
                 const content = decodeURIComponent(escape(atob(data.content)));
-                newsData = JSON.parse(content);
+                const parsedData = JSON.parse(content);
+                
+                newsData = parsedData.news || [];
+                const config = parsedData.config || {};
+                
+                currentAuthor = config.author || 'Noticias';
+                currentHandle = config.handle || '@noticias';
+                currentAuthorAvatar = (config.author || 'Noticias').substring(0, 2).toUpperCase();
+                
+                document.getElementById('profileAuthor').textContent = currentAuthor;
+                document.getElementById('profileHandle').textContent = currentHandle;
+                
+                renderStories(parsedData.stories || []);
                 renderFeed();
-                lucide.createIcons();
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('feed').innerHTML = '<div class="p-4 text-center text-gray-500">No hay noticias</div>';
+                document.getElementById('feed').innerHTML = '<div class="p-4 text-center text-gray-500">Error cargando noticias</div>';
             }
+        }
+
+        function renderStories(stories) {
+            const container = document.getElementById('storiesContainer');
+            if (!stories || stories.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.innerHTML = stories.map(story => `
+                <div class="story story-ring" onclick="openStory('${story.id}')">
+                    <img src="${story.image}" alt="Story">
+                </div>
+            `).join('');
         }
 
         function renderFeed() {
             const feed = document.getElementById('feed');
             feed.innerHTML = newsData.map((post, idx) => {
-                const likeCount = likes[post.id] || 0;
-                const isLiked = likes[post.id] ? '❤️' : '🤍';
-                const initials = (post.title.match(/\b\w/g) || []).slice(0, 2).join('').toUpperCase() || 'N';
-                const timeAgo = formatTime(post.id);
-
+                const isLiked = likedNews.includes(post.id);
+                const isVideo = post.videoEmbed || post.videoUrl;
+                
                 return `
-                    <article class="border-b border-gray-200 dark:border-gray-800">
-                        <!-- Post Header -->
-                        <div class="px-4 py-3 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white text-xs font-bold">${initials}</div>
+                    <article class="border-b border-gray-200">
+                        <!-- Header -->
+                        <div class="px-4 py-3 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-600 flex items-center justify-center text-white font-bold">${currentAuthorAvatar}</div>
                                 <div>
-                                    <div class="font-semibold text-sm">Noticias</div>
-                                    <div class="text-xs text-gray-500">@noticias • ${timeAgo}</div>
+                                    <p class="font-bold text-sm">${post.author || currentAuthor}</p>
+                                    <p class="text-xs text-gray-500">${post.handle || currentHandle} • ${formatTime(post.id)}</p>
                                 </div>
                             </div>
                             <button class="text-gray-500" onclick="alert('Más opciones')">⋯</button>
                         </div>
 
-                        <!-- Post Image -->
-                        ${post.image ? `<img src="${post.image}" class="post-image w-full" onclick="openPost(${idx})" style="cursor: pointer;">` : `<div class="post-image w-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white text-4xl">📰</div>`}
+                        <!-- Media -->
+                        ${isVideo ? `
+                            <div class="video-container">
+                                ${post.videoEmbed || `<iframe src="${post.videoUrl}" allowfullscreen></iframe>`}
+                            </div>
+                        ` : post.image ? `
+                            <img src="${post.image}" class="post-image ${post.imageHeight && post.imageHeight !== post.imageWidth ? 'vertical' : ''}" onclick="openPost('${post.slug}')" style="cursor: pointer;">
+                        ` : ''}
 
-                        <!-- Post Actions -->
-                        <div class="px-4 pt-3 pb-2 flex gap-4">
-                            <button onclick="toggleLike(${idx})" class="text-xl" id="like-${idx}">${isLiked}</button>
-                            <button onclick="openShare(${idx})" class="text-xl">💬</button>
-                            <button onclick="openShare(${idx})" class="text-xl">↗️</button>
-                            <button class="text-xl ml-auto">🔖</button>
+                        <!-- Actions -->
+                        <div class="px-4 pt-3 pb-2 flex justify-between">
+                            <div class="flex gap-4">
+                                <button onclick="toggleLike('${post.id}')" class="text-2xl">${isLiked ? '❤️' : '🤍'}</button>
+                                <button onclick="openPost('${post.slug}')" class="text-2xl">💬</button>
+                                <button onclick="sharePost('${post.slug}')" class="text-2xl">↗️</button>
+                            </div>
+                            <button class="text-2xl">🔖</button>
                         </div>
 
-                        <!-- Like Count -->
-                        <div class="px-4 py-2 font-semibold text-sm cursor-pointer" onclick="alert('${likeCount} Me gusta')">${likeCount} Me gusta</div>
+                        <!-- Likes -->
+                        <div class="px-4 py-1 font-bold text-sm">${likedNews.includes(post.id) ? '✓ Te gustó esto' : 'Sé el primero en comentar'}</div>
 
                         <!-- Caption -->
-                        <div class="px-4 pb-3">
-                            <div class="text-sm">
-                                <span class="font-semibold">Noticias</span>
-                                <span class="ml-2">${post.title}</span>
-                            </div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">${post.excerpt}</div>
-                            <button onclick="openPost(${idx})" class="text-xs text-gray-500 mt-2 hover:text-gray-700">VER COMENTARIOS</button>
+                        <div class="px-4 pb-3 text-sm">
+                            <p><span class="font-bold">${post.author || currentAuthor}</span> ${post.title}</p>
+                            <p class="text-gray-600 mt-1">${post.excerpt}</p>
+                            <button onclick="openPost('${post.slug}')" class="text-gray-500 text-xs mt-2 hover:text-gray-700 font-bold">LEER MÁS</button>
                         </div>
                     </article>
                 `;
@@ -157,65 +185,82 @@
             const post = new Date(timestamp);
             const diff = Math.floor((now - post) / 1000);
             
-            if (diff < 60) return 'Ahora';
+            if (diff < 60) return 'ahora';
             if (diff < 3600) return Math.floor(diff / 60) + 'm';
             if (diff < 86400) return Math.floor(diff / 3600) + 'h';
             if (diff < 604800) return Math.floor(diff / 86400) + 'd';
-            if (diff < 2592000) return Math.floor(diff / 604800) + 's';
-            return Math.floor(diff / 2592000) + 'mes';
+            return Math.floor(diff / 604800) + 's';
         }
 
-        function toggleLike(idx) {
-            const post = newsData[idx];
-            if (!likes[post.id]) {
-                likes[post.id] = Math.floor(Math.random() * 500) + 10;
+        function toggleLike(postId) {
+            if (likedNews.includes(postId)) {
+                likedNews = likedNews.filter(id => id !== postId);
             } else {
-                likes[post.id] = 0;
+                likedNews.push(postId);
             }
-            localStorage.setItem('newsLikes', JSON.stringify(likes));
-            document.getElementById('like-' + idx).classList.add('like-animation');
+            localStorage.setItem('likedNews', JSON.stringify(likedNews));
             renderFeed();
-            lucide.createIcons();
+            updateProfileGrid();
         }
 
-        function openShare(idx) {
-            currentSharePost = idx;
-            document.getElementById('shareDialog').showModal();
+        function toggleSearch() {
+            document.getElementById('searchModal').showModal();
+            document.getElementById('searchInput').focus();
+            document.getElementById('searchInput').addEventListener('input', performSearch);
         }
 
-        function shareOn(platform) {
-            if (!currentSharePost && currentSharePost !== 0) return;
-            const post = newsData[currentSharePost];
-            const url = `${window.location.origin}${window.location.pathname}?post=${currentSharePost}`;
-            const text = `${post.title}\n${post.excerpt}\n`;
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const results = newsData.filter(post => 
+                post.title.toLowerCase().includes(query) || 
+                post.excerpt.toLowerCase().includes(query)
+            );
             
-            if (platform === 'copy') {
-                navigator.clipboard.writeText(url);
-                alert('Enlace copiado');
-            } else if (platform === 'whatsapp') {
-                window.open(`https://wa.me/?text=${encodeURIComponent(text + url)}`);
-            } else if (platform === 'twitter') {
-                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text + url)}`);
-            } else if (platform === 'facebook') {
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
-            }
-            document.getElementById('shareDialog').close();
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = results.map(post => `
+                <div class="border rounded-lg p-2 cursor-pointer hover:bg-gray-50" onclick="openPost('${post.slug}'); document.getElementById('searchModal').close();">
+                    <p class="font-bold text-sm">${post.title}</p>
+                    <p class="text-xs text-gray-600">${post.excerpt.substring(0, 80)}...</p>
+                </div>
+            `).join('');
         }
 
-        function openPost(idx) {
-            alert('Ver post completo: ' + newsData[idx].title);
-        }
-
-        function openSettings() {
-            alert('Ir a configuración');
-        }
-
-        function showLiked() {
-            alert('Mostrando posts que te gustan');
+        function toggleLiked() {
+            showProfile();
         }
 
         function showProfile() {
-            alert('Mostrando tu perfil');
+            updateProfileGrid();
+            document.getElementById('profileModal').showModal();
+        }
+
+        function updateProfileGrid() {
+            const grid = document.getElementById('profileGrid');
+            const likedPosts = newsData.filter(post => likedNews.includes(post.id));
+            
+            grid.innerHTML = likedPosts.map(post => `
+                <div class="grid-item cursor-pointer" onclick="openPost('${post.slug}')">
+                    ${post.image ? `<img src="${post.image}" alt="${post.title}">` : '<div class="bg-gradient-to-br from-purple-400 to-pink-600 w-full h-full"></div>'}
+                </div>
+            `).join('');
+        }
+
+        function openPost(slug) {
+            window.location.href = `posts/${slug}.html`;
+        }
+
+        function sharePost(slug) {
+            const url = `${window.location.origin}${window.location.pathname}../posts/${slug}.html`;
+            navigator.clipboard.writeText(url);
+            alert('Enlace copiado');
+        }
+
+        function openStory(storyId) {
+            alert('Story: ' + storyId);
+        }
+
+        function goHome() {
+            window.location.href = 'index.html';
         }
     </script>
 </body>
