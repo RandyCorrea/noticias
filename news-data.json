@@ -1,14 +1,33 @@
-[
-  {
-    "id": 1764212049851,
-    "title": "Venezolana y su hija de 10 años llevan meses desaparecidas, sospechan que fueron asesinadas y enterradas en el patio de su casa",
-    "content": "#Colombia | La Policía Metropolitana de Barranquilla y la Fiscalía General de la Nación investigan la desaparición de Dayana Carolina Ochoa, mujer venezolana de 36 años, y su hija Lucía Carolina Chirino Ochoa, de 10 años, quienes no han sido vistas desde hace más de tres meses en el barrio Me Quejo, sector Loma Roja, en el suroccidente de Barranquilla.\n\nSegún reportes de la comunidad, la pareja de Dayana, Luis Carlos Vengoechea (45 años), ha dado versiones contradictorias sobre su paradero: primero indicó que se encontraba en Panamá por trabajo, luego en Venezuela, y justificó su ausencia con una supuesta deuda de 3 millones de pesos por daños a un televisor. \n\nFamiliares y vecinos señalan que los mensajes recibidos en nombre de Dayana no coinciden con su forma habitual de escribir.\nAdemás, los vecinos reportaron malos olores persistentes en la zona y la presencia de aves carroñeras cerca de la vivienda. \n\nTras difundirse versiones sobre un posible entierro en el patio, residentes intentaron excavar con palas y picos, lo que generó un enfrentamiento con la pareja de Dayana que estuvo a punto de ser linchado, ésto obligó la intervención policial para proteger la integridad de Vengoechea.\n\nLa Fiscalía asignó un investigador al caso y agentes del CTI realizaron una inspección técnica en la vivienda (carrera 25 con calle 81C). \nHasta el momento, no se ha presentado una denuncia formal de desaparición, lo que limita el alcance de las diligencias. \n\nLa hermana de Dayana, María Alexandra Ochoa, desde Venezuela, solicitó una investigación urgente, destacando que sus pertenencias personales y documentos permanecen en la casa, y que nunca ha dejado de comunicarse con su familia en el pasado.",
-    "excerpt": "#Colombia | La Policía Metropolitana de Barranquilla y la Fiscalía General de la Nación investigan la desaparición de Dayana Carolina Ochoa, mujer ven",
-    "image": "images/img_1764212049851.jpg",
-    "imageWidth": 1080,
-    "imageHeight": 1440,
-    "date": "26 de noviembre de 2025, 23:54",
-    "timestamp": 1764212049851,
-    "url": "posts/1764212049851.html"
-  }
-]
+{
+  "config": { "author": "Noticias Randy Correa", "handle": "@RandyCorrea" },
+  "stories": [],
+  "news": [
+    {
+      "id": 1732992000000,
+      "title": "Tendencias tecnológicas 2025",
+      "excerpt": "Las tecnologías que definirán el próximo año en el mundo digital...",
+      "image": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500",
+      "slug": "tendencias-tech-2025",
+      "author": "Tech Editor",
+      "handle": "@techeditor"
+    },
+    {
+      "id": 1732991000000,
+      "title": "Desarrollo web en 2025",
+      "excerpt": "Framework modernos y las mejores prácticas en desarrollo...",
+      "image": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500",
+      "slug": "desarrollo-web-2025",
+      "author": "Dev News",
+      "handle": "@devnews"
+    },
+    {
+      "id": 1732990000000,
+      "title": "Video: Introducción a JavaScript",
+      "excerpt": "Tutorial completo para comenzar con JavaScript desde cero...",
+      "videoEmbed": "<iframe width='100%' height='100%' src='https://www.youtube.com/embed/PkZNo7MFNFg' allowfullscreen></iframe>",
+      "slug": "intro-javascript",
+      "author": "Dev Tutorials",
+      "handle": "@devtutorials"
+    }
+  ]
+}
