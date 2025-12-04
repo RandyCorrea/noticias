@@ -3,21 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InstaNews</title>
+    <title>RandyCorrea</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-gray-50 dark:bg-black">
+<body class="bg-white">
     <div class="min-h-screen flex justify-center">
-        <div class="w-full max-w-md bg-white dark:bg-black shadow-sm border-x border-gray-200 dark:border-gray-800">
-            <header class="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 h-14 flex items-center justify-between">
-                <a href="index.html" class="text-xl font-bold italic">InstaNews</a>
+        <div class="w-full max-w-md bg-white border-x border-gray-200">
+            <header class="sticky top-0 z-50 bg-white border-b border-gray-200 px-4 h-14 flex items-center justify-between">
+                <a href="index.html" class="text-xl font-bold italic">RandyCorrea</a>
             </header>
+
             <main id="feed" class="pb-16"></main>
-            <nav class="fixed bottom-0 w-full max-w-md bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 h-12 flex justify-around z-50">
-                <a href="index.html" class="flex items-center justify-center p-2"><i data-lucide="home" class="w-6 h-6"></i></a>
-                <button onclick="showProfile()" class="flex items-center justify-center p-2"><i data-lucide="user" class="w-6 h-6"></i></button>
+
+            <nav class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-200 h-12 flex justify-around z-50">
+                <a href="index.html" class="flex items-center justify-center p-2 hover:text-blue-500">
+                    <i data-lucide="home" class="w-6 h-6"></i>
+                </a>
+                <button onclick="showSearch()" class="flex items-center justify-center p-2 hover:text-blue-500">
+                    <i data-lucide="search" class="w-6 h-6"></i>
+                </button>
+                <button onclick="showProfile()" class="flex items-center justify-center p-2 hover:text-blue-500">
+                    <i data-lucide="grid" class="w-6 h-6"></i>
+                </button>
             </nav>
+        </div>
+    </div>
+
+    <!-- Modal de Búsqueda -->
+    <div id="searchModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
+        <div class="w-full max-w-md bg-white rounded-t-2xl p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold">Buscar noticias</h2>
+                <button onclick="closeSearch()" class="text-gray-500 hover:text-black">✕</button>
+            </div>
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Busca por título, autor..." 
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                onkeyup="filterNews()"
+            >
+            <div id="searchResults" class="mt-4 max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Perfil (Grid) -->
+    <div id="profileModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="w-full max-w-md bg-white rounded-2xl p-4 max-h-96 overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold">Mis artículos</h2>
+                <button onclick="closeProfile()" class="text-gray-500 hover:text-black">✕</button>
+            </div>
+            <div id="profileGrid" class="grid grid-cols-3 gap-2"></div>
         </div>
     </div>
 
@@ -33,30 +71,50 @@
                 newsData = JSON.parse(atob(data.content)).news || [];
                 renderFeed();
                 lucide.createIcons();
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         function renderFeed() {
             document.getElementById('feed').innerHTML = newsData.map(post => `
-                <article class="border-b border-gray-200 dark:border-gray-800">
+                <article class="border-b border-gray-200">
                     <div class="px-4 py-3 flex justify-between items-center">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-500"></div>
-                            <div><p class="font-semibold text-sm">${post.author || 'Noticias'}</p></div>
+                            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                                ${post.author ? post.author.charAt(0).toUpperCase() : 'N'}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-sm">${post.author || 'Noticias'}</p>
+                                <p class="text-xs text-gray-500">${post.handle || '@noticias'}</p>
+                            </div>
                         </div>
-                        <button><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                        <button class="text-gray-500 hover:text-black">⋯</button>
                     </div>
-                    ${post.videoEmbed ? `<div style="width:100%;aspect-ratio:1/1;background:#000">${post.videoEmbed}</div>` : post.image ? `<img src="${post.image}" class="w-full" style="aspect-ratio:1/1;object-fit:cover">` : ''}
-                    <div class="px-4 py-3 flex gap-4">
-                        <button onclick="toggleLike('${post.id}')"><i data-lucide="heart" class="w-6 h-6 ${likedNews.includes(post.id) ? 'fill-red-500 text-red-500' : ''}"></i></button>
-                        <button><i data-lucide="message-circle" class="w-6 h-6"></i></button>
-                        <button><i data-lucide="send" class="w-6 h-6"></i></button>
-                        <button class="ml-auto"><i data-lucide="bookmark" class="w-6 h-6"></i></button>
-                    </div>
-                    <div class="px-4 pb-3">
-                        <p class="font-bold text-sm">${post.title}</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${post.excerpt}</p>
-                        <button onclick="window.location.href='posts/${post.slug}.html'" class="text-xs font-bold text-blue-500 mt-2">LEER MÁS</button>
+
+                    ${post.videoEmbed ? `
+                        <div class="px-4 pb-3">${post.videoEmbed}</div>
+                    ` : `
+                        <img src="${post.image}" alt="${post.title}" class="w-full aspect-square object-cover">
+                    `}
+
+                    <div class="px-4 py-3">
+                        <div class="flex justify-between mb-3">
+                            <div class="flex gap-4">
+                                <button onclick="toggleLike('${post.id}')" class="hover:text-red-500">
+                                    <i data-lucide="heart" class="w-6 h-6 ${likedNews.includes(post.id) ? 'fill-red-500 text-red-500' : ''}"></i>
+                                </button>
+                                <button class="hover:text-blue-500">
+                                    <i data-lucide="share-2" class="w-6 h-6"></i>
+                                </button>
+                            </div>
+                            <button class="hover:text-blue-500">
+                                <i data-lucide="bookmark" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                        <p class="font-semibold text-sm mb-2">${post.title}</p>
+                        <p class="text-sm text-gray-600 mb-3">${post.excerpt}</p>
+                        <button onclick="window.location.href='/noticias/posts/${post.slug}.html'" class="text-blue-500 font-semibold text-sm hover:text-blue-700">LEER MÁS</button>
                     </div>
                 </article>
             `).join('');
@@ -64,13 +122,77 @@
         }
 
         function toggleLike(id) {
-            if (likedNews.includes(id)) likedNews = likedNews.filter(x => x !== id);
-            else likedNews.push(id);
+            const index = likedNews.indexOf(id);
+            if (index > -1) {
+                likedNews.splice(index, 1);
+            } else {
+                likedNews.push(id);
+            }
             localStorage.setItem('likedNews', JSON.stringify(likedNews));
             renderFeed();
         }
 
-        function showProfile() { alert('Perfil: ' + likedNews.length + ' favoritos'); }
+        function showSearch() {
+            document.getElementById('searchModal').classList.remove('hidden');
+            document.getElementById('searchInput').focus();
+        }
+
+        function closeSearch() {
+            document.getElementById('searchModal').classList.add('hidden');
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+        }
+
+        function filterNews() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const results = newsData.filter(post => 
+                post.title.toLowerCase().includes(query) || 
+                post.excerpt.toLowerCase().includes(query) ||
+                (post.author && post.author.toLowerCase().includes(query))
+            );
+            
+            document.getElementById('searchResults').innerHTML = results.map(post => `
+                <div class="p-3 border border-gray-200 rounded-lg mb-2 cursor-pointer hover:bg-gray-100" onclick="window.location.href='/noticias/posts/${post.slug}.html'">
+                    <p class="font-semibold text-sm">${post.title}</p>
+                    <p class="text-xs text-gray-600">${post.excerpt}</p>
+                </div>
+            `).join('');
+        }
+
+        function showProfile() {
+            const likedPosts = newsData.filter(post => likedNews.includes(post.id));
+            document.getElementById('profileGrid').innerHTML = likedPosts.map(post => `
+                <div class="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 border border-gray-200" 
+                     onclick="window.location.href='/noticias/posts/${post.slug}.html'"
+                     title="${post.title}">
+                    ${post.videoEmbed ? `
+                        <div class="w-full h-full bg-gray-300 flex items-center justify-center">
+                            <i data-lucide="play-circle" class="w-8 h-8 text-white"></i>
+                        </div>
+                    ` : `
+                        <img src="${post.image}" alt="${post.title}" class="w-full h-full object-cover">
+                    `}
+                </div>
+            `).join('');
+            
+            if (likedPosts.length === 0) {
+                document.getElementById('profileGrid').innerHTML = '<p class="col-span-3 text-center text-gray-500 py-8">Aún no has marcado artículos como favoritos</p>';
+            }
+            
+            document.getElementById('profileModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeProfile() {
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeSearch();
+                closeProfile();
+            }
+        });
 
         loadNews();
     </script>
