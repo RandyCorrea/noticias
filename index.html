@@ -48,20 +48,33 @@
         </div>
     </div>
 
-    <!-- Modal de Perfil (Grid) -->
+    <!-- Modal de Perfil (Grid de todas las noticias) -->
     <div id="profileModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div class="w-full max-w-md bg-white rounded-2xl p-4 max-h-96 overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold">Mis artículos</h2>
+                <h2 class="text-lg font-bold">Todas las noticias</h2>
                 <button onclick="closeProfile()" class="text-gray-500 hover:text-black">✕</button>
             </div>
             <div id="profileGrid" class="grid grid-cols-3 gap-2"></div>
         </div>
     </div>
 
+    <!-- Modal de Compartir -->
+    <div id="shareModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
+        <div class="w-full max-w-md bg-white rounded-t-2xl p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold">Compartir en redes</h2>
+                <button onclick="closeShare()" class="text-gray-500 hover:text-black">✕</button>
+            </div>
+            <div id="shareButtons" class="grid grid-cols-2 gap-3"></div>
+        </div>
+    </div>
+
     <script>
         const REPO = 'RandyCorrea/noticias';
+        const SITE_URL = 'https://randycorrea.github.io/noticias';
         let newsData = [];
+        let currentShareUrl = '';
         let likedNews = JSON.parse(localStorage.getItem('likedNews') || '[]');
 
         async function loadNews() {
@@ -104,8 +117,8 @@
                                 <button onclick="toggleLike('${post.id}')" class="hover:text-red-500">
                                     <i data-lucide="heart" class="w-6 h-6 ${likedNews.includes(post.id) ? 'fill-red-500 text-red-500' : ''}"></i>
                                 </button>
-                                <button class="hover:text-blue-500">
-                                    <i data-lucide="share-2" class="w-6 h-6"></i>
+                                <button onclick="showShare('${post.slug}', '${post.title}')" class="hover:text-blue-500">
+                                    <i data-lucide="send" class="w-6 h-6"></i>
                                 </button>
                             </div>
                             <button class="hover:text-blue-500">
@@ -160,8 +173,7 @@
         }
 
         function showProfile() {
-            const likedPosts = newsData.filter(post => likedNews.includes(post.id));
-            document.getElementById('profileGrid').innerHTML = likedPosts.map(post => `
+            document.getElementById('profileGrid').innerHTML = newsData.map(post => `
                 <div class="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 border border-gray-200" 
                      onclick="window.location.href='/noticias/posts/${post.slug}.html'"
                      title="${post.title}">
@@ -175,10 +187,6 @@
                 </div>
             `).join('');
             
-            if (likedPosts.length === 0) {
-                document.getElementById('profileGrid').innerHTML = '<p class="col-span-3 text-center text-gray-500 py-8">Aún no has marcado artículos como favoritos</p>';
-            }
-            
             document.getElementById('profileModal').classList.remove('hidden');
             lucide.createIcons();
         }
@@ -187,10 +195,56 @@
             document.getElementById('profileModal').classList.add('hidden');
         }
 
+        function showShare(slug, title) {
+            currentShareUrl = `${SITE_URL}/posts/${slug}.html`;
+            const shareTitle = title || 'Lee esta noticia en RandyCorrea';
+            
+            document.getElementById('shareButtons').innerHTML = `
+                <a href="https://wa.me/?text=${encodeURIComponent(shareTitle + ' ' + currentShareUrl)}" target="_blank" class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="message-circle" class="w-6 h-6 text-green-500"></i>
+                    <span class="text-sm font-semibold">WhatsApp</span>
+                </a>
+                <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(currentShareUrl)}&text=${encodeURIComponent(shareTitle)}" target="_blank" class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="twitter" class="w-6 h-6 text-blue-400"></i>
+                    <span class="text-sm font-semibold">Twitter</span>
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentShareUrl)}" target="_blank" class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="facebook" class="w-6 h-6 text-blue-600"></i>
+                    <span class="text-sm font-semibold">Facebook</span>
+                </a>
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentShareUrl)}" target="_blank" class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="linkedin" class="w-6 h-6 text-blue-700"></i>
+                    <span class="text-sm font-semibold">LinkedIn</span>
+                </a>
+                <a href="https://t.me/share/url?url=${encodeURIComponent(currentShareUrl)}&text=${encodeURIComponent(shareTitle)}" target="_blank" class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="send" class="w-6 h-6 text-blue-500"></i>
+                    <span class="text-sm font-semibold">Telegram</span>
+                </a>
+                <button onclick="copyToClipboard('${currentShareUrl}')" class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="copy" class="w-6 h-6 text-gray-600"></i>
+                    <span class="text-sm font-semibold">Copiar enlace</span>
+                </button>
+            `;
+            
+            document.getElementById('shareModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeShare() {
+            document.getElementById('shareModal').classList.add('hidden');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('¡Enlace copiado al portapapeles!');
+            });
+        }
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeSearch();
                 closeProfile();
+                closeShare();
             }
         });
 
