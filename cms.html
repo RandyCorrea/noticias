@@ -52,18 +52,14 @@
         .content { padding: 30px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 20px; }
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
             color: #333;
         }
-        input[type="text"],
-        input[type="url"],
-        textarea {
+        input[type="text"], input[type="url"], textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #ddd;
@@ -72,9 +68,7 @@
             font-size: 1em;
             transition: border-color 0.3s;
         }
-        input[type="text"]:focus,
-        input[type="url"]:focus,
-        textarea:focus {
+        input[type="text"]:focus, input[type="url"]:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -127,7 +121,6 @@
         }
         .loading { text-align: center; color: #667eea; }
         .error { color: #ff6b6b; padding: 15px; background: #fff5f5; border-radius: 8px; }
-        .success { color: #51cf66; padding: 15px; background: #f1fce3; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -138,12 +131,11 @@
         </header>
         
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('create')">➕ Crear</button>
-            <button class="tab-btn" onclick="switchTab('manage')">📋 Gestionar</button>
+            <button class="tab-btn active" id="btnCrear" onclick="switchTab('create', event)">➕ Crear</button>
+            <button class="tab-btn" id="btnGestionar" onclick="switchTab('manage', event)">📋 Gestionar</button>
         </div>
         
         <div class="content">
-            <!-- TAB: CREAR -->
             <div id="createTab" class="tab-content active">
                 <h2>📝 Crear Nueva Noticia</h2>
                 <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -152,7 +144,7 @@
                 
                 <div class="form-group">
                     <label>Título *</label>
-                    <input type="text" id="title" placeholder="Título de la noticia" oninput="generateSlug()">
+                    <input type="text" id="title" placeholder="Título de la noticia">
                 </div>
                 
                 <div class="form-group">
@@ -189,7 +181,6 @@
                 <div id="publishMessage"></div>
             </div>
             
-            <!-- TAB: GESTIONAR -->
             <div id="manageTab" class="tab-content">
                 <h2>📋 Gestionar Noticias</h2>
                 <div id="newsList" class="loading"><p>Cargando...</p></div>
@@ -202,10 +193,20 @@
         const REPO = 'noticias';
         let allNews = [];
 
+        // Initialize event listeners when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const titleInput = document.getElementById('title');
+            if (titleInput) {
+                titleInput.addEventListener('input', generateSlug);
+            }
+        });
+
         function generateSlug() {
             const title = document.getElementById('title').value;
+            const slugDisplay = document.getElementById('slugDisplay');
+            
             if (!title) {
-                document.getElementById('slugDisplay').innerHTML = 'Se generará automáticamente';
+                slugDisplay.innerHTML = 'Se generará automáticamente';
                 return;
             }
             
@@ -214,14 +215,17 @@
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-+|-+$/g, '');
             
-            document.getElementById('slugDisplay').innerHTML = `<strong>Slug:</strong> ${slug}`;
+            slugDisplay.innerHTML = `<strong>Slug:</strong> ${slug}`;
+            console.log('Slug generado:', slug);
         }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(tab + 'Tab').classList.add('active');
+        function switchTab(tab, event) {
+            if (event) {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                event.target.classList.add('active');
+                document.getElementById(tab + 'Tab').classList.add('active');
+            }
             
             if (tab === 'manage') {
                 loadNews();
