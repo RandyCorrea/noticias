@@ -3,178 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">Portal de Noticias</title>
-    <meta name="description" content="Portal de noticias y artículos" id="pageDescription">
-    <meta property="og:type" content="article">
-    <meta property="og:site_name" content="Portal de Noticias">
-    <meta property="og:title" content="Portal de Noticias" id="ogTitle">
-    <meta property="og:description" content="Últimas noticias y actualizaciones" id="ogDescription">
-    <meta property="og:image" content="" id="ogImage">
-    <meta property="og:image:width" content="1200" id="ogImageWidth">
-    <meta property="og:image:height" content="630" id="ogImageHeight">
-    <meta property="og:url" content="" id="ogUrl">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Portal de Noticias" id="twitterTitle">
-    <meta name="twitter:description" content="Últimas noticias y actualizaciones" id="twitterDescription">
-    <meta name="twitter:image" content="" id="twitterImage">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>InstaNews - Noticias con Estilo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/styles.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #ffffff; color: #1a1a1a; line-height: 1.6; }
-        .header { background: #ffffff; border-bottom: 1px solid #e6e6e6; padding: 20px 0; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); background: rgba(255,255,255,0.95); }
-        .header-content { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
-        .site-title { font-family: 'Merriweather', Georgia, serif; font-size: 1.8em; font-weight: 900; color: #1a1a1a; letter-spacing: -0.02em; text-decoration: none; }
-        .site-nav a { color: #6b6b6b; text-decoration: none; font-size: 0.95em; transition: color 0.2s ease; }
-        .hero { max-width: 1100px; margin: 60px auto 40px; padding: 0 24px; }
-        .hero-title { font-family: 'Merriweather', Georgia, serif; font-size: 3.5em; font-weight: 700; line-height: 1.1; margin-bottom: 20px; color: #1a1a1a; letter-spacing: -0.03em; }
-        .hero-subtitle { font-size: 1.4em; color: #6b6b6b; font-weight: 400; max-width: 600px; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 60px 24px; }
-        .news-grid { display: grid; grid-template-columns: 1fr; gap: 0; border-top: 1px solid #e6e6e6; }
-        .news-card { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; padding: 40px 0; border-bottom: 1px solid #e6e6e6; cursor: pointer; transition: all 0.2s ease; }
-        .news-card:hover { opacity: 0.8; }
-        .news-content { display: flex; flex-direction: column; justify-content: center; }
-        .news-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-        .news-author { font-size: 0.85em; color: #1a1a1a; font-weight: 500; }
-        .news-date { font-size: 0.85em; color: #6b6b6b; }
-        .news-title { font-family: 'Merriweather', Georgia, serif; font-size: 1.75em; font-weight: 700; line-height: 1.3; margin-bottom: 12px; color: #1a1a1a; letter-spacing: -0.02em; }
-        .news-excerpt { font-size: 1em; color: #6b6b6b; line-height: 1.5; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .news-footer { display: flex; align-items: center; gap: 20px; font-size: 0.85em; color: #6b6b6b; }
-        .news-image-container { display: flex; align-items: center; }
-        .news-image { width: 100%; height: 200px; object-fit: cover; border-radius: 4px; }
-        .news-image-placeholder { width: 100%; height: 200px; background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 3em; color: #c0c0c0; }
-        .single-article { max-width: 740px; margin: 60px auto; padding: 0 24px; }
-        .back-link { display: inline-block; color: #6b6b6b; text-decoration: none; margin-bottom: 40px; font-size: 0.95em; }
-        .back-link:hover { color: #1a1a1a; }
-        .article-title { font-family: 'Merriweather', Georgia, serif; font-size: 3em; font-weight: 700; line-height: 1.2; margin-bottom: 24px; color: #1a1a1a; letter-spacing: -0.03em; }
-        .article-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid #e6e6e6; }
-        .article-image { width: 100%; max-height: 500px; object-fit: cover; margin-bottom: 40px; border-radius: 4px; }
-        .article-text { font-family: 'Merriweather', Georgia, serif; font-size: 1.25em; line-height: 1.8; color: #1a1a1a; white-space: pre-wrap; word-wrap: break-word; }
-        .share-buttons { margin-top: 60px; padding-top: 40px; border-top: 1px solid #e6e6e6; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-        .share-btn { padding: 10px 20px; background: #f5f5f5; border: none; border-radius: 20px; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; }
-        .share-btn:hover { background: #e0e0e0; }
-        .loading, .no-news { text-align: center; padding: 80px 24px; }
-        .no-news h2 { font-family: 'Merriweather', Georgia, serif; font-size: 2em; margin-bottom: 16px; color: #1a1a1a; }
-        .btn { display: inline-block; padding: 12px 24px; background: #1a1a1a; color: white; text-decoration: none; border-radius: 24px; font-weight: 500; font-size: 0.95em; }
-        .footer { max-width: 1100px; margin: 0 auto; padding: 40px 24px; text-align: center; border-top: 1px solid #e6e6e6; color: #6b6b6b; font-size: 0.9em; }
-        .footer a { color: #1a1a1a; text-decoration: none; font-weight: 500; }
-        @media (max-width: 768px) {
-            .hero-title { font-size: 2.5em; }
-            .news-card { grid-template-columns: 1fr; gap: 20px; }
-            .news-image-container { order: -1; }
-            .article-title { font-size: 2em; }
-            .article-text { font-size: 1.1em; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        }
+        .post-image {
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+        }
+        .like-animation {
+            animation: heartBeat 0.3s ease-in-out;
+        }
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.3); }
+            50% { transform: scale(1.1); }
         }
     </style>
 </head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <a href="/noticias/" class="site-title">Portal de Noticias</a>
-            <nav class="site-nav"><a href="/noticias/">Inicio</a></nav>
+<body class="bg-gray-50 dark:bg-black text-gray-900 dark:text-white">
+    <!-- Mobile Container -->
+    <div class="min-h-screen flex justify-center">
+        <div class="w-full max-w-md bg-white dark:bg-black shadow-sm">
+            <!-- Header -->
+            <header class="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 h-14 flex items-center justify-between">
+                <a href="index.html" class="text-xl font-bold tracking-tighter italic">InstaNews</a>
+                <button onclick="openSettings()" class="w-6 h-6">
+                    <i data-lucide="settings" class="w-6 h-6"></i>
+                </button>
+            </header>
+
+            <!-- Feed -->
+            <main id="feed" class="pb-16">
+                <!-- Posts se cargarán aquí -->
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="fixed bottom-0 w-full max-w-md bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 h-12 flex items-center justify-around">
+                <a href="index.html" class="p-2 text-gray-900 dark:text-white">
+                    <i data-lucide="home" class="w-6 h-6"></i>
+                </a>
+                <a href="cms.html" class="p-2 text-gray-900 dark:text-white">
+                    <i data-lucide="plus" class="w-6 h-6"></i>
+                </a>
+                <button onclick="showLiked()" class="p-2 text-gray-900 dark:text-white">
+                    <i data-lucide="heart" class="w-6 h-6"></i>
+                </button>
+                <button onclick="showProfile()" class="p-2 text-gray-900 dark:text-white">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                </button>
+            </nav>
         </div>
-    </header>
-    <div id="heroSection" class="hero">
-        <h2 class="hero-title">Últimas historias y noticias</h2>
-        <p class="hero-subtitle">Mantente informado con las últimas actualizaciones y artículos destacados</p>
     </div>
-    <main class="container"><div id="newsContainer" class="loading">Cargando noticias...</div></main>
-    <footer class="footer"><p>Portal de Noticias © 2025 • <a href="cms.html">Acceder al CMS</a></p></footer>
+
+    <!-- Modal para compartir -->
+    <dialog id="shareDialog" class="backdrop:bg-black/50 rounded-lg p-6 max-w-sm" backdrop>
+        <h2 class="text-xl font-semibold mb-4">Compartir en</h2>
+        <div class="flex gap-4 mb-4">
+            <button onclick="shareOn('whatsapp')" class="flex-1 p-2 bg-green-500 text-white rounded">WhatsApp</button>
+            <button onclick="shareOn('twitter')" class="flex-1 p-2 bg-blue-400 text-white rounded">Twitter</button>
+            <button onclick="shareOn('facebook')" class="flex-1 p-2 bg-blue-600 text-white rounded">Facebook</button>
+        </div>
+        <button onclick="shareOn('copy')" class="w-full p-2 bg-gray-200 dark:bg-gray-700 rounded mb-2">Copiar enlace</button>
+        <form method="dialog" class="flex gap-2">
+            <button type="submit" class="flex-1 p-2 bg-gray-200 dark:bg-gray-700 rounded">Cancelar</button>
+        </form>
+    </dialog>
+
     <script>
+        const REPO_OWNER = 'RandyCorrea';
+        const REPO_NAME = 'noticias';
         let newsData = [];
-        window.addEventListener('DOMContentLoaded', init);
-        async function init() {
+        let likes = JSON.parse(localStorage.getItem('newsLikes') || '{}');
+        let currentSharePost = null;
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadNews();
+        });
+
+        async function loadNews() {
             try {
-                const response = await fetch('news-data.json?t=' + Date.now());
-                if (!response.ok) throw new Error('Sin noticias');
-                newsData = await response.json();
-                const urlParams = new URLSearchParams(window.location.search);
-                const newsId = urlParams.get('id');
-                if (newsId) {
-                    const news = newsData.find(n => n.id == newsId);
-                    if (news) showSingleArticle(news);
-                    else window.location.href = '/noticias/';
-                } else {
-                    if (newsData.length === 0) showNoNews();
-                    else displayNews(newsData);
-                }
-            } catch (error) { showNoNews(); }
-        }
-        function calculateReadTime(text) { return `${Math.ceil(text.split(/\s+/).length / 200)} min de lectura`; }
-        
-        async function getImageDimensions(imageUrl) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.onload = function() {
-                    resolve({ width: this.width, height: this.height });
-                };
-                img.onerror = function() {
-                    resolve({ width: 1200, height: 630 });
-                };
-                img.src = imageUrl;
-            });
-        }
-        
-        async function updateMetaTags(news) {
-            const baseUrl = window.location.origin + window.location.pathname;
-            const fullUrl = window.location.href;
-            const description = news.content.substring(0, 160).replace(/\n/g, ' ');
-            const imageUrl = news.image ? (baseUrl.replace('/index.html', '/').replace(/\/$/, '') + '/' + news.image) : '';
-            
-            document.getElementById('pageTitle').textContent = news.title + ' | Portal de Noticias';
-            document.getElementById('ogTitle').setAttribute('content', news.title);
-            document.getElementById('twitterTitle').setAttribute('content', news.title);
-            document.getElementById('pageDescription').setAttribute('content', description);
-            document.getElementById('ogDescription').setAttribute('content', description);
-            document.getElementById('twitterDescription').setAttribute('content', description);
-            document.getElementById('ogUrl').setAttribute('content', fullUrl);
-            
-            if (imageUrl) {
-                document.getElementById('ogImage').setAttribute('content', imageUrl);
-                document.getElementById('twitterImage').setAttribute('content', imageUrl);
-                
-                let width = news.imageWidth || 1200;
-                let height = news.imageHeight || 630;
-                
-                if (!news.imageWidth || !news.imageHeight) {
-                    const dims = await getImageDimensions(imageUrl);
-                    width = dims.width;
-                    height = dims.height;
-                }
-                
-                document.getElementById('ogImageWidth').setAttribute('content', width);
-                document.getElementById('ogImageHeight').setAttribute('content', height);
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/news-data.json`);
+                if (!response.ok) return;
+                const data = await response.json();
+                const content = decodeURIComponent(escape(atob(data.content)));
+                newsData = JSON.parse(content);
+                renderFeed();
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('feed').innerHTML = '<div class="p-4 text-center text-gray-500">No hay noticias</div>';
             }
         }
-        
-        function showSingleArticle(news) {
-            document.getElementById('heroSection').style.display = 'none';
-            updateMetaTags(news);
-            const container = document.getElementById('newsContainer');
-            const readTime = calculateReadTime(news.content);
-            container.className = 'single-article';
-            container.innerHTML = `<a href="/noticias/" class="back-link">← Volver a todas las noticias</a><h1 class="article-title">${news.title}</h1><div class="article-meta"><span style="font-weight: 500; color: #1a1a1a;">Portal de Noticias</span><span>·</span><span style="color: #6b6b6b;">${news.date}</span><span>·</span><span style="color: #6b6b6b;">${readTime}</span></div>${news.image ? `<img src="${news.image}" alt="${news.title}" class="article-image">` : ''}<div class="article-text">${news.content}</div><div class="share-buttons"><span style="color: #6b6b6b;">Compartir:</span><button class="share-btn" onclick="copyLink()">🔗 Copiar enlace</button><button class="share-btn" onclick="shareTwitter()">🐦 Twitter</button><button class="share-btn" onclick="shareFacebook()">👍 Facebook</button><button class="share-btn" onclick="shareWhatsApp()">💬 WhatsApp</button></div>`;
+
+        function renderFeed() {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = newsData.map((post, idx) => {
+                const likeCount = likes[post.id] || 0;
+                const isLiked = likes[post.id] ? '❤️' : '🤍';
+                const initials = (post.title.match(/\b\w/g) || []).slice(0, 2).join('').toUpperCase() || 'N';
+                const timeAgo = formatTime(post.id);
+
+                return `
+                    <article class="border-b border-gray-200 dark:border-gray-800">
+                        <!-- Post Header -->
+                        <div class="px-4 py-3 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white text-xs font-bold">${initials}</div>
+                                <div>
+                                    <div class="font-semibold text-sm">Noticias</div>
+                                    <div class="text-xs text-gray-500">@noticias • ${timeAgo}</div>
+                                </div>
+                            </div>
+                            <button class="text-gray-500" onclick="alert('Más opciones')">⋯</button>
+                        </div>
+
+                        <!-- Post Image -->
+                        ${post.image ? `<img src="${post.image}" class="post-image w-full" onclick="openPost(${idx})" style="cursor: pointer;">` : `<div class="post-image w-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white text-4xl">📰</div>`}
+
+                        <!-- Post Actions -->
+                        <div class="px-4 pt-3 pb-2 flex gap-4">
+                            <button onclick="toggleLike(${idx})" class="text-xl" id="like-${idx}">${isLiked}</button>
+                            <button onclick="openShare(${idx})" class="text-xl">💬</button>
+                            <button onclick="openShare(${idx})" class="text-xl">↗️</button>
+                            <button class="text-xl ml-auto">🔖</button>
+                        </div>
+
+                        <!-- Like Count -->
+                        <div class="px-4 py-2 font-semibold text-sm cursor-pointer" onclick="alert('${likeCount} Me gusta')">${likeCount} Me gusta</div>
+
+                        <!-- Caption -->
+                        <div class="px-4 pb-3">
+                            <div class="text-sm">
+                                <span class="font-semibold">Noticias</span>
+                                <span class="ml-2">${post.title}</span>
+                            </div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">${post.excerpt}</div>
+                            <button onclick="openPost(${idx})" class="text-xs text-gray-500 mt-2 hover:text-gray-700">VER COMENTARIOS</button>
+                        </div>
+                    </article>
+                `;
+            }).join('');
         }
-        function displayNews(news) {
-            const container = document.getElementById('newsContainer');
-            container.className = 'news-grid';
-            container.innerHTML = '';
-            news.forEach((item) => {
-                const card = document.createElement('article');
-                card.className = 'news-card';
-                card.onclick = () => window.location.href = `?id=${item.id}`;
-                const excerpt = item.content.substring(0, 200) + (item.content.length > 200 ? '...' : '');
-                const readTime = calculateReadTime(item.content);
-                card.innerHTML = `<div class="news-content"><div class="news-meta"><span class="news-author">Portal de Noticias</span><span>·</span><span class="news-date">${item.date.split(',')[0]}</span></div><h2 class="news-title">${item.title}</h2><p class="news-excerpt">${excerpt}</p><div class="news-footer"><span>${readTime}</span></div></div><div class="news-image-container">${item.image ? `<img src="${item.image}" alt="${item.title}" class="news-image">` : '<div class="news-image-placeholder">📰</div>'}</div>`;
-                container.appendChild(card);
-            });
+
+        function formatTime(timestamp) {
+            const now = new Date();
+            const post = new Date(timestamp);
+            const diff = Math.floor((now - post) / 1000);
+            
+            if (diff < 60) return 'Ahora';
+            if (diff < 3600) return Math.floor(diff / 60) + 'm';
+            if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+            if (diff < 604800) return Math.floor(diff / 86400) + 'd';
+            if (diff < 2592000) return Math.floor(diff / 604800) + 's';
+            return Math.floor(diff / 2592000) + 'mes';
         }
-        function showNoNews() { document.getElementById('newsContainer').className = 'no-news'; document.getElementById('newsContainer').innerHTML = `<h2>Aún no hay noticias publicadas</h2><p>Sé el primero en compartir una historia</p><a href="cms.html" class="btn">Crear nueva noticia</a>`; }
-        function copyLink() { navigator.clipboard.writeText(window.location.href); alert('✅ Enlace copiado al portapapeles'); }
-        function shareTwitter() { window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(document.querySelector('.article-title').textContent)}&url=${encodeURIComponent(window.location.href)}`, '_blank'); }
-        function shareFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank'); }
-        function shareWhatsApp() { window.open(`https://wa.me/?text=${encodeURIComponent(document.querySelector('.article-title').textContent + ' - ' + window.location.href)}`, '_blank'); }
+
+        function toggleLike(idx) {
+            const post = newsData[idx];
+            if (!likes[post.id]) {
+                likes[post.id] = Math.floor(Math.random() * 500) + 10;
+            } else {
+                likes[post.id] = 0;
+            }
+            localStorage.setItem('newsLikes', JSON.stringify(likes));
+            document.getElementById('like-' + idx).classList.add('like-animation');
+            renderFeed();
+            lucide.createIcons();
+        }
+
+        function openShare(idx) {
+            currentSharePost = idx;
+            document.getElementById('shareDialog').showModal();
+        }
+
+        function shareOn(platform) {
+            if (!currentSharePost && currentSharePost !== 0) return;
+            const post = newsData[currentSharePost];
+            const url = `${window.location.origin}${window.location.pathname}?post=${currentSharePost}`;
+            const text = `${post.title}\n${post.excerpt}\n`;
+            
+            if (platform === 'copy') {
+                navigator.clipboard.writeText(url);
+                alert('Enlace copiado');
+            } else if (platform === 'whatsapp') {
+                window.open(`https://wa.me/?text=${encodeURIComponent(text + url)}`);
+            } else if (platform === 'twitter') {
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text + url)}`);
+            } else if (platform === 'facebook') {
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
+            }
+            document.getElementById('shareDialog').close();
+        }
+
+        function openPost(idx) {
+            alert('Ver post completo: ' + newsData[idx].title);
+        }
+
+        function openSettings() {
+            alert('Ir a configuración');
+        }
+
+        function showLiked() {
+            alert('Mostrando posts que te gustan');
+        }
+
+        function showProfile() {
+            alert('Mostrando tu perfil');
+        }
     </script>
 </body>
 </html>
