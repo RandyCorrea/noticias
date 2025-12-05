@@ -1,154 +1,180 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CMS v4 - Noticias RandyCorrea</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .error { @apply text-red-600 bg-red-50 p-3 rounded-lg mb-4; }
-        .success { @apply text-green-600 bg-green-50 p-3 rounded-lg mb-4; }
-        .btn { @apply px-4 py-2 rounded-lg font-semibold transition; }
-        .btn-primary { @apply bg-blue-600 text-white hover:bg-blue-700; }
-        .btn-small { @apply px-3 py-1 text-sm; }
-        .btn-danger { @apply bg-red-600 text-white hover:bg-red-700; }
-        .btn-info { @apply bg-cyan-600 text-white hover:bg-cyan-700; }
-        .news-item { @apply bg-gray-100 p-4 rounded-lg mb-3 border-l-4 border-blue-600; }
-        .news-item h3 { @apply font-bold mb-2; }
-        .news-item-actions { @apply flex gap-2 mt-3 flex-wrap; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS v4 - Noticias RandyCorrea</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .tab-btn { @apply px-4 py-2 rounded-lg font-semibold transition; }
+    .tab-btn.active { @apply bg-blue-600 text-white hover:bg-blue-700; }
+    .tab-btn.inactive { @apply bg-gray-200 text-gray-700 hover:bg-gray-300; }
+    .form-group { @apply mb-4; }
+    .form-label { @apply block text-sm font-semibold text-gray-800 mb-2; }
+    .form-input { @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500; }
+    .form-textarea { @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none; }
+    .btn { @apply px-4 py-2 rounded-lg font-semibold transition; }
+    .btn-primary { @apply bg-blue-600 text-white hover:bg-blue-700; }
+    .btn-secondary { @apply bg-gray-400 text-white hover:bg-gray-500; }
+    .info-box { @apply bg-blue-50 border-l-4 border-blue-600 p-3 rounded; }
+    .success-message { @apply text-green-600 bg-green-50 p-2 rounded border border-green-300; }
+    .error-message { @apply text-red-600 bg-red-50 p-2 rounded border border-red-300; }
+  </style>
 </head>
 <body class="bg-gradient-to-br from-purple-500 to-pink-500 min-h-screen p-4">
-    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <header class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 text-center">
-            <h1 class="text-3xl font-bold mb-2">🚀 CMS v4 - Noticias</h1>
-            <p class="opacity-90">Gestor completo con GitHub Integration</p>
-        </header>
-        
-        <div class="flex border-b">
-            <button onclick="switchTab('create')" class="flex-1 py-4 px-6 font-semibold text-purple-600 border-b-2 border-purple-600 tab-btn active">➕ Crear</button>
-            <button onclick="switchTab('manage')" class="flex-1 py-4 px-6 font-semibold text-gray-600 hover:text-purple-600 tab-btn">📋 Gestionar</button>
-        </div>
-        
-        <div class="p-6">
-            <!-- TAB: CREAR -->
-            <div id="createTab" class="tab-content">
-                <div class="bg-blue-50 p-4 rounded-lg mb-4 border-l-4 border-blue-600">
-                    <strong>🔐 GitHub Token:</strong> Obtén en <a href="https://github.com/settings/tokens" target="_blank" class="text-blue-600 underline">github.com/settings/tokens</a>
-                </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block font-semibold mb-2">🔐 GitHub Token *</label>
-                        <input type="password" id="githubToken" placeholder="ghp_xxxx..." class="w-full p-2 border border-gray-300 rounded-lg">
-                    </div>
-                    
-                    <div>
-                        <label class="block font-semibold mb-2">📝 Título *</label>
-                        <input type="text" id="title" placeholder="Título de la noticia" class="w-full p-2 border border-gray-300 rounded-lg">
-                    </div>
-                    
-                    <div>
-                        <label class="block font-semibold mb-2">Slug (auto-generado)</label>
-                        <div id="slugDisplay" class="w-full p-2 bg-gray-100 rounded-lg text-gray-600">Se generará automáticamente</div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-semibold mb-2">👤 Nombre del Autor</label>
-                            <input type="text" id="authorName" value="Randy Correa" placeholder="Nombre" class="w-full p-2 border border-gray-300 rounded-lg">
-                        </div>
-                        <div>
-                            <label class="block font-semibold mb-2">@ Handle</label>
-                            <input type="text" id="authorHandle" value="@RandyCorrea" placeholder="@handle" class="w-full p-2 border border-gray-300 rounded-lg">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block font-semibold mb-2">🖼️ Foto de Perfil</label>
-                        <div class="flex gap-2">
-                            <input type="file" id="avatarFile" accept="image/*" class="flex-1 p-2 border border-gray-300 rounded-lg">
-                            <input type="url" id="avatarUrl" placeholder="O pega URL" class="flex-1 p-2 border border-gray-300 rounded-lg">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block font-semibold mb-2">📄 Contenido *</label>
-                        <textarea id="content" placeholder="Escribe el contenido" class="w-full p-2 border border-gray-300 rounded-lg h-32"></textarea>
-                    </div>
-                    
-                    <div>
-                        <label class="block font-semibold mb-2">📋 Resumen *</label>
-                        <textarea id="excerpt" placeholder="Resumen corto" class="w-full p-2 border border-gray-300 rounded-lg h-20"></textarea>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-semibold mb-2">📌 Tipo de Contenido</label>
-                            <select id="contentType" class="w-full p-2 border border-gray-300 rounded-lg">
-                                <option value="text">Texto + Imagen</option>
-                                <option value="video">Video (YouTube)</option>
-                            </select>
-                        </div>
-                        <div id="imageGroup">
-                            <label class="block font-semibold mb-2">🖼️ Imagen</label>
-                            <div class="flex gap-2">
-                                <input type="file" id="imageFile" accept="image/*" class="flex-1 p-2 border border-gray-300 rounded-lg text-sm">
-                                <input type="url" id="imageUrl" placeholder="URL" class="flex-1 p-2 border border-gray-300 rounded-lg text-sm">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="youtubeGroup" style="display:none;">
-                        <label class="block font-semibold mb-2">🎥 ID YouTube</label>
-                        <input type="text" id="youtubeId" placeholder="Ej: Ihy0QziLDf0" class="w-full p-2 border border-gray-300 rounded-lg">
-                    </div>
-                    
-                    <div id="message"></div>
-                    
-                    <button onclick="CMS.publishArticle()" class="btn btn-primary w-full">🚀 Publicar</button>
-                </div>
-            </div>
-            
-            <!-- TAB: GESTIONAR -->
-            <div id="manageTab" class="tab-content" style="display:none;">
-                <div class="bg-blue-50 p-4 rounded-lg mb-4 border-l-4 border-blue-600">
-                    <strong>🔐 GitHub Token:</strong> Necesario para editar/eliminar
-                </div>
-                
-                <div class="mb-4">
-                    <input type="password" id="githubTokenManage" placeholder="ghp_xxxx..." class="w-full p-2 border border-gray-300 rounded-lg mb-2">
-                    <button onclick="CMS.loadArticles()" class="btn btn-info w-full">🔄 Cargar Noticias</button>
-                </div>
-                
-                <div id="newsList"></div>
-            </div>
-        </div>
+  <div id="app" class="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 text-center">
+      <h1 class="text-3xl font-bold mb-2">🚀 CMS - Portal de Noticias</h1>
+      <p class="opacity-90">Gestor de contenido para RandyCorrea.github.io/noticias</p>
+    </header>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-gray-200 p-4 gap-2">
+      <button id="btnCrear" class="tab-btn active" onclick="switchTab('create')">➕ Crear</button>
+      <button id="btnGestionar" class="tab-btn inactive" onclick="switchTab('manage')">📋 Gestionar</button>
     </div>
-    
-    <script src="cms-v4.js"></script>
-    <script>
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('border-purple-600', 'text-purple-600'));
-            
-            document.getElementById(tab + 'Tab').style.display = 'block';
-            event.target.classList.add('border-purple-600', 'text-purple-600');
-            
-            if (tab === 'manage') CMS.loadArticles();
-        }
-        
-        // Override updateContentOptions desde cms-v4
-        window.updateContentOptions = function() {
-            const type = document.getElementById('contentType')?.value;
-            const imageGroup = document.getElementById('imageGroup');
-            const youtubeGroup = document.getElementById('youtubeGroup');
-            if (imageGroup) imageGroup.style.display = type === 'video' ? 'none' : 'block';
-            if (youtubeGroup) youtubeGroup.style.display = type === 'video' ? 'block' : 'none';
-        };
-        
-        // Escuchar cambios en contentType
-        document.getElementById('contentType').addEventListener('change', updateContentOptions);
-    </script>
+
+    <!-- Create Tab -->
+    <div id="createTab" class="p-6">
+      <h2 class="text-2xl font-bold mb-6 text-gray-800">📝 Crear Nueva Noticia</h2>
+
+      <!-- GitHub Token Info -->
+      <div class="info-box mb-6">
+        <p><strong>🔐 Tu GitHub Token:</strong> Obtén en: github.com/settings/tokens (permisos: repo)</p>
+      </div>
+
+      <!-- GitHub Token Input -->
+      <div class="form-group">
+        <label class="form-label">GitHub Token *</label>
+        <input type="password" id="token" class="form-input" placeholder="tu_token_github" required>
+      </div>
+
+      <!-- Title -->
+      <div class="form-group">
+        <label class="form-label">Título *</label>
+        <input type="text" id="title" class="form-input" placeholder="Título de la noticia" required oninput="CMS.generateSlug()">
+      </div>
+
+      <!-- Slug Display -->
+      <div class="form-group">
+        <label class="form-label">Slug</label>
+        <div id="slugDisplay" class="form-input bg-gray-100 text-gray-600">Se generará automáticamente</div>
+      </div>
+
+      <!-- Content -->
+      <div class="form-group">
+        <label class="form-label">Contenido *</label>
+        <textarea id="content" class="form-textarea h-32" placeholder="Escribe el contenido aquí..." required></textarea>
+      </div>
+
+      <!-- Excerpt -->
+      <div class="form-group">
+        <label class="form-label">Excerpt/Resumen *</label>
+        <textarea id="excerpt" class="form-textarea h-24" placeholder="Resumen corto de la noticia..." required></textarea>
+      </div>
+
+      <!-- Content Type Selector -->
+      <div class="form-group">
+        <label class="form-label">Tipo de Contenido *</label>
+        <select id="contentType" class="form-input" onchange="CMS.toggleContentFields()" required>
+          <option value="text-image">📝 Texto + Imagen</option>
+          <option value="youtube">🎥 Video de YouTube</option>
+        </select>
+      </div>
+
+      <!-- Image File Upload (hidden for YouTube) -->
+      <div id="imageGroup" class="form-group">
+        <label class="form-label">📤 Subir Imagen</label>
+        <input type="file" id="imageFile" class="form-input" accept="image/*" onchange="CMS.previewImage()">
+        <p class="text-sm text-gray-500 mt-2">O usa la URL de imagen:</p>
+        <input type="url" id="image" class="form-input" placeholder="https://ejemplo.com/imagen.jpg">
+        <div id="imagePreview" class="mt-3 hidden">
+          <img id="imagePreviewImg" src="" alt="Preview" class="max-h-40 rounded-lg">
+        </div>
+      </div>
+
+      <!-- YouTube ID (hidden by default) -->
+      <div id="youtubeGroup" class="form-group hidden">
+        <label class="form-label">🎥 YouTube Video ID</label>
+        <input type="text" id="youtubeId" class="form-input" placeholder="dQw4w9WgXcQ">
+        <p class="text-sm text-gray-500 mt-2">Ejemplo: de https://www.youtube.com/watch?v=<strong>dQw4w9WgXcQ</strong></p>
+      </div>
+
+      <!-- Author Name (Pre-filled, disabled) -->
+      <div class="form-group">
+        <label class="form-label">👤 Autor</label>
+        <input type="text" id="author" class="form-input bg-gray-100" value="Randy Correa" disabled>
+      </div>
+
+      <!-- Author Handle -->
+      <div class="form-group">
+        <label class="form-label">@ Handle</label>
+        <input type="text" id="handle" class="form-input" placeholder="@tunombre" value="@RandyCorrea">
+      </div>
+
+      <!-- Author Profile Photo -->
+      <div class="form-group">
+        <label class="form-label">📸 Foto de Perfil del Autor</label>
+        <input type="file" id="avatarFile" class="form-input" accept="image/*" onchange="CMS.previewAvatar()">
+        <p class="text-sm text-gray-500 mt-2">O usa la URL:</p>
+        <input type="url" id="avatar" class="form-input" placeholder="https://ejemplo.com/avatar.jpg">
+        <div id="avatarPreview" class="mt-3 hidden">
+          <img id="avatarPreviewImg" src="" alt="Avatar Preview" class="w-20 h-20 rounded-full">
+        </div>
+      </div>
+
+      <!-- Message Display -->
+      <div id="publishMessage" class="mb-4"></div>
+
+      <!-- Publish Button -->
+      <button onclick="CMS.publishArticle()" class="btn btn-primary w-full text-lg">🚀 Publicar</button>
+    </div>
+
+    <!-- Manage Tab -->
+    <div id="manageTab" class="p-6 hidden">
+      <h2 class="text-2xl font-bold mb-6 text-gray-800">📋 Gestionar Artículos</h2>
+
+      <!-- GitHub Token for Manage -->
+      <div class="form-group">
+        <label class="form-label">GitHub Token *</label>
+        <input type="password" id="tokenManage" class="form-input" placeholder="tu_token_github" required>
+      </div>
+
+      <!-- Load Articles Button -->
+      <button onclick="CMS.loadArticles()" class="btn btn-primary mb-6">🔄 Cargar Artículos</button>
+
+      <!-- Articles List -->
+      <div id="articlesList" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <script src="cms-v4.js"></script>
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('[id$="Tab"]').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active') && b.classList.add('inactive'));
+      
+      document.getElementById(tab + 'Tab').style.display = 'block';
+      document.getElementById('btn' + (tab === 'create' ? 'Crear' : 'Gestionar')).classList.add('active');
+      document.getElementById('btn' + (tab === 'create' ? 'Crear' : 'Gestionar')).classList.remove('inactive');
+      
+      if (tab === 'manage') CMS.loadArticles();
+    }
+
+    // Override updateContentOptions for cms-v4
+    window.updateContentOptions = function() {
+      const type = document.getElementById('contentType')?.value;
+      const imageGroup = document.getElementById('imageGroup');
+      const youtubeGroup = document.getElementById('youtubeGroup');
+      if (imageGroup) imageGroup.style.display = type === 'youtube' ? 'none' : 'block';
+      if (youtubeGroup) youtubeGroup.style.display = type === 'youtube' ? 'block' : 'none';
+    };
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof CMS !== 'undefined' && CMS.init) CMS.init();
+    });
+  </script>
 </body>
 </html>
